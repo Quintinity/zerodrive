@@ -1,4 +1,5 @@
 drop table if exists Item;
+drop table if exists Session;
 drop table if exists User;
 
 create table User(
@@ -23,4 +24,13 @@ create table Item(
     primary key(id),
     foreign key(user_id) references User(id) on delete cascade,
 	foreign key(parent) references Item(id) on delete cascade
+);
+
+create table Session(
+    token varchar(64) not null,
+    user_id int not null,
+    created datetime,
+
+    primary key(token),
+    foreign key(user_id) references User(id) on delete cascade
 );

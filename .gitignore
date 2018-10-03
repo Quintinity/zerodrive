@@ -1,6 +1,7 @@
 # Custom
 .vscode/
 src/zerodrive.cfg
+secret.key
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
