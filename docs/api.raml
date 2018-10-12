@@ -1,0 +1,128 @@
+#%RAML 1.0
+title: "ZeroDrive REST API"
+description: "REST API for the INFO 3103 term project. ZeroDrive is a cloud storage\
+  \ webapp, inspired by Microsoft OneDrive."
+version: "1.0.0"
+mediaType:
+- "application/json"
+/user:
+  displayName: "User"
+  description: "Endpoint for creating, accessing, and updating user accounts."
+  post:
+    displayName: "Create new account"
+    description: "Creates a new user account from the given username and password."
+    body:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+      example:
+        value: "{\"username:\" \"tomsmith\", \"password\": \"abc123\"}"
+        strict: false
+    responses:
+      200:
+        description: "Account successfully created"
+      400:
+        description: "Failed to create account. Body contains error message."
+        body:
+          type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "A description of the error that occurred"
+          examples:
+            example:
+              value: "{\"error\": \"Username already in use\"}"
+              strict: false
+            example1:
+              value: "{\"error\": \"Missing request body field: password\"}"
+              strict: false
+  get:
+    displayName: "Retrieve data about the current user"
+    description: "Returns information about the current logged in user."
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+        example: "session = <encrypted session data>"
+    responses:
+      200:
+        description: "Response body contains user information"
+        body:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              required: false
+            email:
+              type: "string"
+              required: false
+      401:
+        description: "Occurs when the session cookie is not set or invalid"
+  delete:
+    displayName: "Delete the current user account"
+    description: "Deletes the current logged user's account. This also deletes all\
+      \ of the files the user has uploaded."
+    headers:
+      Cookie:
+        type: "string"
+        description: "The session cookie retrieved from logging in"
+        example: "session = <encrypted session data>"
+    responses:
+      200:
+        description: "The account has been successfully deleted. The session cookie\
+          \ has also been cleared."
+      401:
+        description: "Account deletion fails if the session does not exist or is invalid"
+/login:
+  displayName: "Endpoint for logging in and out"
+  post:
+    displayName: "Logs in the user with the given credentials"
+    body:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        password:
+          type: "string"
+    responses:
+      200:
+        description: "Login was successful"
+        headers:
+          Set-Cookie:
+            type: "string"
+            description: "The encrypted session cookie to by passed to subsequent\
+              \ requests"
+      400:
+        description: "Login was not successful"
+        body:
+          type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "Error message containing information about why the request\
+                \ failed"
+  delete:
+    displayName: "Logs out the current user"
+    headers:
+      Cookie:
+        type: "string"
+        description: "The encrypted session cookie"
+        example: "session = <encrypted session data>"
+    responses:
+      200:
+        description: "The logout was successful and the session was cleared"
+      400:
+        description: "The logout request failed. The body contains the error message."
+        body:
+          type: "object"
+          properties:
+            error:
+              type: "string"
+              description: "The error message related to the request failure."
+              required: false
+          example:
+            value: "{\"error\": \"Logout failed because user is not logged in\"}"
+            strict: false
