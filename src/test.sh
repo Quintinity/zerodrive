@@ -35,7 +35,10 @@ function testcase() {
     echo "[${COLOR}${RESULT}${COLOR_RESET}] ${title}"
 }
 
-testcase "Test user creation" 200 curl -s -H "Content-Type: application/json" -X POST -d '{"vmarica": "a"}' $BASEURL/user
+testcase "Test user creation - no email"    400 curl -s -H "Content-Type: application/json" -X POST -d '{"password": "a@unb.ca"}' $BASEURL/user
+testcase "Test user creation - no password" 400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "abcdef"}' $BASEURL/user
+testcase "Test user creation - valid data"  200 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "god@unb.ca", "password": "abcdef"}' $BASEURL/user
+testcase "Test user creation - duplicate"   400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "god@unb.ca", "password": "xyzabc"}' $BASEURL/user
 
 if [[ $FAILED_TEST_CASES -gt 0 ]]; then
     exit 1

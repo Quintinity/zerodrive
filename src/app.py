@@ -20,6 +20,7 @@ server.secret_key = util.get_or_create_secret_key(os.path.join(app_path, "secret
 @server.teardown_appcontext
 def cleanup_after_request(a):
     if "db" in g:
+        print("Closing connection!")
         g.db.close()
 
 # Add resource endpoints

@@ -8,7 +8,7 @@
 import os
 import pymysql.cursors
 import flask
-from .config import db
+from . import config as cfg
 
 def get_or_create_secret_key(secret_key_file_name):
     if os.path.isfile(secret_key_file_name):
@@ -22,5 +22,5 @@ def get_or_create_secret_key(secret_key_file_name):
 
 def open_db_connection():
     if not "db" in flask.g:
-        flask.g.db = pymysql.connect(host=db["host"], port=db["port"], user=db["user"], password=db["password"], db=db["name"])
+        flask.g.db = pymysql.connect(host=cfg.db["host"], port=cfg.db["port"], user=cfg.db["user"], password=cfg.db["password"], db=cfg.db["name"])
     return flask.g.db

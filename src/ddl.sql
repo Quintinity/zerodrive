@@ -1,35 +1,58 @@
-drop table if exists Item;
+set FOREIGN_KEY_CHECKS = 0;
+drop table if exists Folder;
+drop table if exists File;
 drop table if exists Session;
 drop table if exists User;
+set FOREIGN_KEY_CHECKS = 1;
 
 create table User(
     id int not null auto_increment,
-    username varchar(50) not null,
-    hashed_password varchar(64) not null,
-    salt varchar(48) not null,
+    email varchar(64) not null,
+    hashpw varchar(64),
+    salt varchar(48),
+    is_unb_account boolean not null default false,
 
-    primary key(id)
+    max_storage_space int not null,
+
+    primary key(id),
+    unique key unique_email (email)
 );
 
-create table Item(
+create table Folder(
     id int not null auto_increment,
-    name varchar(25) not null,
-    data blob,
-    size_bytes int,
-    last_modified datetime,
-    is_directory boolean default false,
-    parent int,
+    name varchar(128) not null,
     user_id int not null,
-    
+    parent_folder int,
+
+    last_modified timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+
     primary key(id),
-    foreign key(user_id) references User(id) on delete cascade,
-	foreign key(parent) references Item(id) on delete cascade
+    foreign key(user_id) references User(id),
+    foreign key(parent_folder) references Folder(id) on delete cascade,
+    unique key ensure_unique_names_in_folder (name, parent_folder)
+
+);
+
+create table File(
+    id int not null auto_increment,
+    name varchar(128) not null,
+    user_id int not null,
+    parent_folder int not null,
+
+    last_modified timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+    data longblob not null,
+    size_bytes int not null,
+
+    primary key(id),
+    foreign key(user_id) references User(id),
+    foreign key(parent_folder) references Folder(id) on delete cascade,
+    unique key ensure_unique_names_in_folder (name, parent_folder)
 );
 
 create table Session(
     token varchar(64) not null,
     user_id int not null,
-    created datetime,
+    created timestamp default CURRENT_TIMESTAMP,
 
     primary key(token),
     foreign key(user_id) references User(id) on delete cascade
