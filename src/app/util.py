@@ -23,11 +23,12 @@ def get_or_create_secret_key(secret_key_file_name):
 def open_db_connection():
     if not "db" in flask.g:
         try:
-            print("Host: {}, Port: {}, Name: {}, User: {}".format(cfg.db["host"], cfg.db["port"], cfg.db["name"], cfg.db["user"]))
+            print("Host: {}, Port: {}, Name: {}, User: {}".format(cfg.db["host"], cfg.db["port"], cfg.db["name"], cfg.db["user"]), flush=True)
             flask.g.db = pymysql.connect(host=cfg.db["host"], port=cfg.db["port"], user=cfg.db["user"], password=cfg.db["password"], db=cfg.db["name"])
         except pymysql.MySQLError as err:
-            print(err.args[1])
+            print(err.args[1], flush=True)
             return None
         except Exception as err:
-            print(err)
+            print(err, flush=True)
+            return None
     return flask.g.db
