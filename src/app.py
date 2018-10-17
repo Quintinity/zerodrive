@@ -28,7 +28,4 @@ api = Api(server)
 api.add_resource(User, "/user")
 
 if __name__ == "__main__":
-    #server.run(port=config.server["port"], debug=True)
-    port = config.db["port"]
-    print(port)
-    print(type(port))
+    server.run(port=config.server["port"], debug=True)
