@@ -23,16 +23,18 @@ class envdict(dict):
         env_var_name = "zerodrive_{}_{}".format(self.name, key).upper()
         default_val = dict.__getitem__(self, key)
         val = os.environ.get(env_var_name, default_val)
-        if default_val is int:
+        if type(default_val) is int:
             val = int(val)
+        elif type(default_val) is bool:
+            val = bool(val)
         return val
 
 # Default configuration
 db = envdict("db")
 db["name"] = "zerodrive"
-db["host"] = "localhost"
-db["port"] = 4445
-db["user"] = "user"
+db["host"] = "hostname"
+db["port"] = 3306
+db["user"] = "root"
 db["password"] = "password"
 
 server = envdict("server")
