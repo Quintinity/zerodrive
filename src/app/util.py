@@ -28,4 +28,6 @@ def open_db_connection():
         except pymysql.MySQLError as err:
             print(err.args[1])
             return None
+        except Exception as err:
+            print(err)
     return flask.g.db
