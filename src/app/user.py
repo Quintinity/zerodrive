@@ -34,8 +34,11 @@ class User(Resource):
         salt = os.urandom(24).hex() # Our salts are 48 byte random strings
         hashpw = sha256((password + salt).encode("UTF-8")).digest().hex() # TODO: One of the deployment servers doesn't have bcrypt
 
+        connection = util.open_db_connection()
+        if connection is None:
+            return {"error": "Failed to open database connection."}, 500
+
         try:
-            connection = util.open_db_connection()
             cur = connection.cursor()
             query = "insert into User(email, hashpw, salt, max_storage_space) values(%s, %s, %s, %s)"
             cur.execute(query, (email, hashpw, salt, MAX_STORAGE_SPACE))
