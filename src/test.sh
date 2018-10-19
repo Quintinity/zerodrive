@@ -21,8 +21,8 @@ function testcase() {
     code=$("$@" -w "%{http_code}" -o /dev/null)
 
     RESULT=" OK "
-    COLOR=$(tput setaf 2)
-    COLOR_RESET=$(tput sgr0)
+    COLOR=$(tput -Txterm setaf 2)
+    COLOR_RESET=$(tput -Txterm sgr0)
     MSG=
     
     if [ "$code" != "$expected_code" ]; then
@@ -43,3 +43,4 @@ testcase "Test user creation - duplicate"   400 curl -s -H "Content-Type: applic
 if [[ $FAILED_TEST_CASES -gt 0 ]]; then
     exit 1
 fi
+
