@@ -21,13 +21,13 @@ function testcase() {
     code=$("$@" -w "%{http_code}" -o /dev/null)
 
     RESULT=" OK "
-    COLOR=$(tput -Txterm setaf 2)
-    COLOR_RESET=$(tput -Txterm sgr0)
+    COLOR=$(tput setaf 2 2>/dev/null)
+    COLOR_RESET=$(tput sgr0 2>/dev/null)
     MSG=
     
     if [ "$code" != "$expected_code" ]; then
         RESULT="FAIL"
-        COLOR=$(tput setaf 1)
+        COLOR=$(tput setaf 1 2>/dev/null)
         FAILED_TEST_CASES=$(($FAILED_TEST_CASES + 1))
     fi
     TOTAL_TEST_CASES=$(($TOTAL_TEST_CASES + 1))
