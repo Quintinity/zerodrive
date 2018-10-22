@@ -20,8 +20,8 @@ class User(Resource):
 
     # POST: create a new user account
     def post(self):
-        body = request.get_json()
-        if not "email" in body or not "password" in body:
+        body = request.get_json(silent=True)
+        if body is None or not "email" in body or not "password" in body:
             return {"error": "Missing parameter in body."}, 400
 
         email = body["email"].strip()

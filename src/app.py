@@ -7,7 +7,7 @@
 
 from flask import Flask, session, redirect, url_for, g
 from flask_restful import Api
-from app import util, User, config
+from app import util, config, User, Login
 import os
 
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -25,7 +25,7 @@ def cleanup_after_request(a):
 # Add resource endpoints
 api = Api(server)
 api.add_resource(User, "/user")
+api.add_resource(Login, "/login")
 
 if __name__ == "__main__":
-    print("Host: {}, Port: {}, Name: {}, User: {}".format(config.db["host"], config.db["port"], config.db["name"], config.db["user"]), flush=True)
-    server.run(port=config.server["port"], debug=True)
+    server.run(port=config.server["port"], debug=False)

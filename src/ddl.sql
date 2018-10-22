@@ -52,7 +52,7 @@ create table File(
 create table Session(
     token varchar(64) not null,
     user_id int not null,
-    created timestamp default CURRENT_TIMESTAMP,
+    expiry_date timestamp default DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 7 DAY)
 
     primary key(token),
     foreign key(user_id) references User(id) on delete cascade
