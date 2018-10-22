@@ -6,13 +6,15 @@
 ##########################################
 
 from flask_restful import Resource
-from flask import request
+from flask import request, g
 from hashlib import sha256
-from . import util
-import pymysql
-import os
 
-MAX_STORAGE_SPACE = 500 * pow(2, 20) # Given every new account 500 MB of storage space
+from . import util
+from .auth import requires_auth
+
+import os, pymysql
+
+MAX_STORAGE_SPACE = 500 * pow(2, 20) # Give every new account 500 MB of storage space
 
 class User(Resource):
     def get(self):
@@ -51,3 +53,8 @@ class User(Resource):
             return {"error": "A database error has occurred ({}).".format(code)}, 400
 
         return 200
+
+    @requires_auth
+    def delete(self):
+        print("Attemping to delete account for {}".format(g.email))
+        return {}, 200

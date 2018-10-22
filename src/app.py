@@ -28,4 +28,4 @@ api.add_resource(User, "/user")
 api.add_resource(Login, "/login")
 
 if __name__ == "__main__":
-    server.run(port=config.server["port"], debug=False)
+    server.run(port=config.server["port"], debug=True)

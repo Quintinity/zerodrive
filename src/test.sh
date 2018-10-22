@@ -3,6 +3,8 @@ IP=127.0.0.1
 PORT=40500
 BASEURL=http://$IP:$PORT
 
+COOKIE_JAR="-b cookiejar -c cookiejar"
+
 # Use netcat to scan port to check if the server is running
 nc -z $IP $PORT
 if [ "$?" = "1" ]; then
@@ -35,10 +37,19 @@ function testcase() {
     echo "[${COLOR}${RESULT}${COLOR_RESET}] ${title}"
 }
 
+# Account creation tests
 testcase "Test user creation - no email"    400 curl -s -H "Content-Type: application/json" -X POST -d '{"password": "a@unb.ca"}' $BASEURL/user
 testcase "Test user creation - no password" 400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "abcdef"}' $BASEURL/user
 testcase "Test user creation - valid data"  200 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/user
 testcase "Test user creation - duplicate"   400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "xyzabc"}' $BASEURL/user
+
+# Login/logout tests
+testcase "Test logging in" 200 curl -s $COOKIE_JAR -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/login
+testcase "Test logging out" 200 curl -s $COOKIE_JAR -X DELETE $BASEURL/login
+
+# Login and delete the account
+curl -s $COOKIE_JAR -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/login
+testcase "Account deletion" 200 curl -s $COOKIE_JAR -X DELETE $BASEURL/user
 
 if [[ $FAILED_TEST_CASES -gt 0 ]]; then
     exit 1

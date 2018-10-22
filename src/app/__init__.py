@@ -7,5 +7,6 @@
 
 from . import util
 from . import config
+from . import auth
 from .user import User
 from .login import Login
