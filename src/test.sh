@@ -40,7 +40,7 @@ function testcase() {
 # Account creation tests
 testcase "Test user creation - no email"    400 curl -s -H "Content-Type: application/json" -X POST -d '{"password": "a@unb.ca"}' $BASEURL/user
 testcase "Test user creation - no password" 400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "abcdef"}' $BASEURL/user
-testcase "Test user creation - valid data"  200 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/user
+testcase "Test user creation - normal"  200 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/user
 testcase "Test user creation - duplicate"   400 curl -s -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "xyzabc"}' $BASEURL/user
 
 # Login/logout tests
@@ -49,7 +49,9 @@ testcase "Test logging out" 200 curl -s $COOKIE_JAR -X DELETE $BASEURL/login
 
 # Login and delete the account
 curl -s $COOKIE_JAR -H "Content-Type: application/json" -X POST -d '{"email": "user@unb.ca", "password": "abcdef"}' $BASEURL/login
-testcase "Account deletion" 200 curl -s $COOKIE_JAR -X DELETE $BASEURL/user
+testcase "Account deletion - normal"        200 curl -s $COOKIE_JAR -X DELETE $BASEURL/user
+testcase "Account deletion - not logged in" 401 curl -s $COOKIE_JAR -X DELETE $BASEURL/user
+
 
 if [[ $FAILED_TEST_CASES -gt 0 ]]; then
     exit 1

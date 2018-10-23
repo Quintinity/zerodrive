@@ -21,7 +21,6 @@ def requires_auth(func):
             connection.commit()
 
             result = cur.fetchone()
-            print(result)
             if result is None:
                 return {"error": "Invalid session token."}, 401
             
