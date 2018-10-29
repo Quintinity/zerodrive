@@ -2,3 +2,4 @@ Flask==0.12.3
 Flask-RESTful==0.3.6
 PyMySQL==0.7.11
 bcrypt==3.1.4
+ldap3==2.3
