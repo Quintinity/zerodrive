@@ -39,3 +39,8 @@ db["password"] = "password"
 
 server = envdict("server")
 server["port"] = 40500
+
+ldap = envdict("ldap")
+ldap["host"] = "ldap.example.com"
+ldap["port"] = 1389
+ldap["use_tls"] = False
