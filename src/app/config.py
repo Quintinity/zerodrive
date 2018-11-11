@@ -35,7 +35,7 @@ db["name"] = "zerodrive"
 db["host"] = "raspberrypi"
 db["port"] = 4445
 db["user"] = "root"
-db["password"] = "info3103_RaspberryP1"
+db["password"] = "password"
 
 server = envdict("server")
 server["port"] = 40500
