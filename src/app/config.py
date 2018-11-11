@@ -32,15 +32,20 @@ class envdict(dict):
 # Default configuration
 db = envdict("db")
 db["name"] = "zerodrive"
-db["host"] = "hostname"
-db["port"] = 3306
+db["host"] = "raspberrypi"
+db["port"] = 4445
 db["user"] = "root"
-db["password"] = "password"
+db["password"] = "info3103_RaspberryP1"
 
 server = envdict("server")
 server["port"] = 40500
 
-ldap = envdict("ldap")
-ldap["host"] = "ldap.example.com"
-ldap["port"] = 1389
-ldap["use_tls"] = False
+ldap_dev = envdict("ldap_dev")
+ldap_dev["host"] = "raspberrypi"
+ldap_dev["port"] = 1389
+ldap_dev["use_tls"] = False
+
+ldap_unb = envdict("ldap_unb")
+ldap_unb["host"] = "ldap-student.cs.unb.ca"
+ldap_unb["port"] = 389
+ldap_unb["use_tls"] = True
