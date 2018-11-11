@@ -3,32 +3,31 @@ SESSION_COOKIE_NAME = "session"
 
 from flask import request, g
 from . import util
+from .exceptions import ZerodriveException
 import pymysql
 
 def requires_auth(func):
     def wrapper(*args, **kwargs):
         session_token = request.cookies.get(SESSION_COOKIE_NAME)
         if session_token is None:
-            return {"error": "You must be logged in to perform this action."}, 401
+            raise ZerodriveException(401, "You must be logged in to perform this action.")
         
         connection = util.open_db_connection()
-        if connection is None:
-            return {"error": "Failed to connect to database."}, 500
 
         try:
             cur = connection.cursor()
-            cur.execute("select User.id, User.email from User, Session where Session.token=%s and User.id = Session.user_id", (session_token))
+            cur.execute("select User.id, User.username from User, Session where Session.token=%s and User.id = Session.user_id", (session_token))
             connection.commit()
 
             result = cur.fetchone()
             if result is None:
-                return {"error": "Invalid session token."}, 401
+                raise ZerodriveException(401, "Invalid session token.")
             
             cur.close()
             g.user_id = result["id"]
-            g.email = result["email"]
+            g.username = result["username"]
         except pymysql.MySQLError as err:
-            return {"error": "A database error has occurred: {}".format(err.args[1])}, 500
+            raise ZerodriveException(500, "A database error has occurred: {}".format(err.args[1]))
         
         return func(*args, **kwargs)
     return wrapper

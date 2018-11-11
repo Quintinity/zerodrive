@@ -8,5 +8,6 @@
 from . import util
 from . import config
 from . import auth
+from .exceptions import ZerodriveException
 from .user import User
 from .login import Login

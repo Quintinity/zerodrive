@@ -7,7 +7,7 @@ set FOREIGN_KEY_CHECKS = 1;
 
 create table User(
     id int not null auto_increment,
-    email varchar(64) not null,
+    username varchar(64) not null,
     hashpw varchar(64),
     salt varchar(48),
     is_unb_account boolean not null default false,
@@ -15,7 +15,7 @@ create table User(
     max_storage_space int not null,
 
     primary key(id),
-    unique key unique_email (email)
+    unique key unique_username (username, is_unb_account)
 );
 
 create table Folder(

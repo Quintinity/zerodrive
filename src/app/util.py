@@ -9,6 +9,7 @@ import os
 import pymysql.cursors
 import flask
 from . import config as cfg
+from .exceptions import ZerodriveException
 
 def get_or_create_secret_key(secret_key_file_name):
     if os.path.isfile(secret_key_file_name):
@@ -31,9 +32,5 @@ def open_db_connection():
                 db=cfg.db["name"],
                 cursorclass=pymysql.cursors.DictCursor)
         except pymysql.MySQLError as err:
-            print(err.args[1], flush=True)
-            return None
-        except Exception as err:
-            print(err, flush=True)
-            return None
+            raise ZerodriveException(500, "A database error has occured: {}".format(err.args[1]))
     return flask.g.db
