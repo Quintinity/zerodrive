@@ -26,13 +26,13 @@ class envdict(dict):
         if type(default_val) is int:
             val = int(val)
         elif type(default_val) is bool:
-            val = bool(val)
+            val = val.lower() == "true"
         return val
 
 # Default configuration
 db = envdict("db")
 db["name"] = "zerodrive"
-db["host"] = "raspberrypi"
+db["host"] = "127.0.0.1"
 db["port"] = 4445
 db["user"] = "user"
 db["password"] = "password"  
@@ -43,7 +43,7 @@ server["cert_file"] = "cert.pem"
 server["key_file"] = "key.pem"
 
 ldap_dev = envdict("ldap_dev")
-ldap_dev["host"] = "raspberrypi"
+ldap_dev["host"] = "127.0.0.1"
 ldap_dev["port"] = 1389
 ldap_dev["use_tls"] = False
 
