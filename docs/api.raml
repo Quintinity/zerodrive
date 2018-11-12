@@ -5,6 +5,15 @@ description: "REST API for the INFO 3103 term project. ZeroDrive is a cloud stor
 version: "1.0.0"
 mediaType:
 - "application/json"
+types:
+  Error:
+    type: "object"
+    description: "A generic error message returned from most endpoints if a request\
+      \ fails."
+    properties:
+      error:
+        type: "string"
+        description: "Detailed error message"
 /user:
   displayName: "User"
   description: "Endpoint for creating, accessing, and updating user accounts."
@@ -14,16 +23,13 @@ mediaType:
     body:
       type: "object"
       properties:
-        username:
+        email:
           type: "string"
         password:
           type: "string"
-      example:
-        value: "{\"username:\" \"tomsmith\", \"password\": \"abc123\"}"
-        strict: false
     responses:
       200:
-        description: "Account successfully created"
+        description: "Account successfully created."
       400:
         description: "Failed to create account. Body contains error message."
         body:
@@ -32,13 +38,9 @@ mediaType:
             error:
               type: "string"
               description: "A description of the error that occurred"
-          examples:
-            example:
-              value: "{\"error\": \"Username already in use\"}"
-              strict: false
-            example1:
-              value: "{\"error\": \"Missing request body field: password\"}"
-              strict: false
+          example:
+            value: "{\"error\": \"Missing request body field: password\"}"
+            strict: false
   get:
     displayName: "Retrieve data about the current user"
     description: "Returns information about the current logged in user."
@@ -46,21 +48,30 @@ mediaType:
       Cookie:
         type: "string"
         description: "Session cookie returned on login"
-        example: "session = <encrypted session data>"
     responses:
       200:
-        description: "Response body contains user information"
+        description: "Success, the body contains user information."
         body:
           type: "object"
           properties:
-            name:
-              type: "string"
-              required: false
             email:
               type: "string"
-              required: false
+            is_unb_account:
+              type: "boolean"
+              description: "True if this user signed up using their UNB account"
+            root_folder_id:
+              type: "integer"
+              description: "The ID of the root folder for this user"
+            used_storage_space:
+              type: "integer"
+              description: "Used storage space in bytes."
+            max_storage_space:
+              type: "integer"
+              description: "Maximum storage space, in bytes, for this user."
       401:
-        description: "Occurs when the session cookie is not set or invalid"
+        description: "The session cookie is not set or invalid."
+        body:
+          type: "Error"
   delete:
     displayName: "Delete the current user account"
     description: "Deletes the current logged user's account. This also deletes all\
@@ -68,18 +79,19 @@ mediaType:
     headers:
       Cookie:
         type: "string"
-        description: "The session cookie retrieved from logging in"
-        example: "session = <encrypted session data>"
+        description: "Session cookie returned on login"
     responses:
       200:
         description: "The account has been successfully deleted. The session cookie\
           \ has also been cleared."
       401:
-        description: "Account deletion fails if the session does not exist or is invalid"
+        description: "Account deletion fails if the session does not exist or is invalid."
+        body:
+          type: "Error"
 /login:
   displayName: "Endpoint for logging in and out"
   post:
-    displayName: "Logs in the user with the given credentials"
+    displayName: "Logs in a user"
     body:
       type: "object"
       properties:
@@ -98,31 +110,246 @@ mediaType:
       400:
         description: "Login was not successful"
         body:
-          type: "object"
-          properties:
-            error:
-              type: "string"
-              description: "Error message containing information about why the request\
-                \ failed"
+          type: "Error"
   delete:
     displayName: "Logs out the current user"
     headers:
       Cookie:
         type: "string"
-        description: "The encrypted session cookie"
-        example: "session = <encrypted session data>"
+        description: "Session cookie returned on login"
     responses:
       200:
         description: "The logout was successful and the session was cleared"
       400:
         description: "The logout request failed. The body contains the error message."
         body:
-          type: "object"
-          properties:
-            error:
-              type: "string"
-              description: "The error message related to the request failure."
-              required: false
+          type: "Error"
           example:
             value: "{\"error\": \"Logout failed because user is not logged in\"}"
             strict: false
+/folder:
+  post:
+    displayName: "Create a new folder"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    body:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        parent_folder_id:
+          type: "integer"
+    responses:
+      200:
+        description: "Folder successfully created. The response body contains the\
+          \ created folder's ID."
+        body:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+      400:
+        description: "No session cookie was included in the request."
+      401:
+        description: "Current user doesn't have access to the requested parent folder."
+      404:
+        description: "The given parent folder ID does not exist."
+/folder/{id}:
+  uriParameters:
+    id:
+      type: "integer"
+      description: "The unique ID of the folder."
+  get:
+    displayName: "Retrieve information about a folder"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    responses:
+      200:
+        body:
+          type: "object"
+          description: "JSON object containing information about requested folder."
+          properties:
+            name:
+              type: "string"
+              description: "Name of the retrieved folder. This is an empty string\
+                \ if the folder is a root folder."
+            hierarchy:
+              type: "array"
+              description: "An order list of all the folders that make up this folder's\
+                \ parent hierarchy. List is empty if this is the root folder."
+              items:
+                type: "object"
+                properties:
+                  name:
+                    type: "integer"
+                    description: "The name of the folder. Empty string if the folder\
+                      \ is the root folder."
+                  id:
+                    type: "integer"
+                    description: "The ID of the folder."
+            contents:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  name:
+                    type: "string"
+                    description: "Name of the child object."
+                  type:
+                    type: "string"
+                    description: "Either \"folder\" or \"file\"."
+                  id:
+                    type: "integer"
+                    description: "The ID of the file or folder."
+                  last_modified:
+                    type: "string"
+                  size:
+                    type: "integer"
+                    description: "If object is a file, the size in bytes of the file."
+                    required: false
+          example:
+            value: "{\n    \"name\": \"SomeFolder\",\n    \"hierarchy\": [\n     \
+              \   {\n            \"name\": \"\",\n            \"id\": 10\n       \
+              \ }\n    ],\n    \"contents\": []\n}"
+            strict: false
+      401:
+        description: "User does not have access to the requested folder."
+      404:
+        description: "Could not find the requested folder."
+  put:
+    displayName: "Rename a folder"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    body:
+      type: "object"
+      properties:
+        new_name:
+          type: "string"
+    responses:
+      200:
+        description: "Folder renamed successfully"
+      401:
+        description: "User does not have permission to rename this folder"
+      404:
+        description: "Could not find the requested folder."
+  delete:
+    displayName: "Delete a folder"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    responses:
+      200:
+        description: "Folder deleted successfully."
+      400:
+        description: "The requested folder is the user's root folder, which cannot\
+          \ be deleted."
+      401:
+        description: "User does not have access to the requested folder."
+      404:
+        description: "Could not find the requested folder."
+/file:
+  post:
+    displayName: "Upload a file"
+    queryParameters:
+      folder:
+        type: "integer"
+        description: "The ID of the folder to upload this file to."
+    headers:
+      Content-Type:
+        type: "string"
+        example: "multipart/form-data"
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    body:
+      multipart/form-data:
+        type: "object"
+        properties:
+          file:
+            type: "file"
+            description: "The contents of the file to upload."
+    responses:
+      200:
+        description: "File uploaded successfully."
+        body:
+          type: "integer"
+          example:
+            value: "The ID of the uploaded file."
+            strict: false
+      400:
+        description: "Request was invalid."
+        body:
+          type: "Error"
+          examples:
+            example:
+              value: "{\"error\": \"Target folder was not specified\"}"
+              strict: false
+            example1:
+              value: "{\"error\": \"File too large! Max file size is 500 MB.\"}"
+              strict: false
+            example2:
+              value: "{\"error\": \"Not enough storage space! You only have 143MB\
+                \ left.\"}"
+              strict: false
+      401:
+        description: "Current user does not have access to upload to the requested\
+          \ folder."
+      404:
+        description: "The given folder ID does not exist."
+/file/{id}:
+  uriParameters:
+    id:
+      type: "integer"
+      description: "The unique ID of a file."
+      example: 6015
+  get:
+    displayName: "Initiates a download for a file"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    responses:
+      200:
+        description: "File retrieved successfully."
+      401:
+        description: "User does not have access to the requested file."
+      404:
+        description: "No file exists with the given ID."
+  put:
+    displayName: "Rename a file"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    body:
+      type: "object"
+      properties:
+        new_name:
+          type: "string"
+    responses:
+      200:
+        description: "File renamed successfully"
+      401:
+        description: "User does not have permission to rename this file."
+      404:
+        description: "Could not find the requested file."
+  delete:
+    displayName: "Delete a file"
+    headers:
+      Cookie:
+        type: "string"
+        description: "Session cookie returned on login"
+    responses:
+      200:
+        description: "File deleted successfully."
+      401:
+        description: "User does not have access to the requested file."
+      404:
+        description: "Could not find the requested file."
