@@ -66,7 +66,7 @@ class Login(Resource):
                 db_connection.commit()
                 user_id = cur.lastrowid
             else:
-                user_id = result["user_id"]
+                user_id = result["id"]
             cur.close()
 
             return user_id
@@ -120,7 +120,7 @@ class Login(Resource):
             response.status_code = 200
             response.set_cookie(auth.SESSION_COOKIE_NAME,
                 session_token, 
-                secure=False, 
+                secure=True, 
                 httponly=True, 
                 max_age=auth.SESSION_TOKEN_LIFETIME * 24 * 60 * 60)
             return response
@@ -137,6 +137,7 @@ class Login(Resource):
         try:
             cur = connection.cursor()
             cur.execute("delete from Session where token=%s", (old_session_token))
+            connection.commit()
             cur.close()
 
             response = make_response()

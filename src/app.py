@@ -35,7 +35,6 @@ api = Api(server)
 api.add_resource(User, "/user")
 api.add_resource(Login, "/login")
 
-
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
     server.run(
