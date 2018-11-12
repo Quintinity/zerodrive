@@ -1,10 +1,10 @@
 #!/bin/bash
 IP=127.0.0.1
 PORT=40500
-BASEURL=http://$IP:$PORT
+BASEURL=https://$IP:$PORT
 
 COOKIE_JAR_FILE="cookiejar.bin"
-COOKIE_JAR_PARAMS="-b $COOKIE_JAR_FILE -c $COOKIE_JAR_FILE"
+CURL_PARAMS="-s -k -b $COOKIE_JAR_FILE -c $COOKIE_JAR_FILE"
 
 # Use netcat to scan port to check if the server is running
 nc -z $IP $PORT
@@ -66,19 +66,19 @@ function testcase() {
 }
 
 # Account creation tests
-testcase "Test user creation - no email"    400 curl -s -H "Content-Type: application/json" -X POST -d '{"password": "xyz"}' $BASEURL/user
-testcase "Test user creation - no password" 400 curl -s -H "Content-Type: application/json" -X POST -d '{"username": "quintinity"}' $BASEURL/user
-testcase "Test user creation - normal"  200 curl -s -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
-testcase "Test user creation - duplicate"   400 curl -s -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
+testcase "Test user creation - no email"    400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"password": "xyz"}' $BASEURL/user
+testcase "Test user creation - no password" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity"}' $BASEURL/user
+testcase "Test user creation - normal"      200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
+testcase "Test user creation - duplicate"   400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
 
 # Login/logout tests
-testcase "Test logging in" 200 curl -s $COOKIE_JAR_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
-testcase "Test logging out" 200 curl -s $COOKIE_JAR_PARAMS -X DELETE $BASEURL/login
+testcase "Test logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+testcase "Test logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
 
 # Login and delete the account
-curl -s $COOKIE_JAR_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
-testcase "Account deletion - normal"        200 curl -s $COOKIE_JAR_PARAMS -X DELETE $BASEURL/user
-testcase "Account deletion - not logged in" 401 curl -s $COOKIE_JAR_PARAMS -X DELETE $BASEURL/user
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+testcase "Account deletion - normal"        200 curl $CURL_PARAMS -X DELETE $BASEURL/user
+testcase "Account deletion - not logged in" 401 curl $CURL_PARAMS -X DELETE $BASEURL/user
 
 # Delete the cookie jar file
 rm $COOKIE_JAR_FILE > /dev/null 2>&1
@@ -86,4 +86,3 @@ rm $COOKIE_JAR_FILE > /dev/null 2>&1
 if [[ $FAILED_TEST_CASES -gt 0 ]]; then
     exit 1
 fi
-

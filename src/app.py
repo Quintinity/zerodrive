@@ -38,4 +38,7 @@ api.add_resource(Login, "/login")
 
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
-    server.run(port=config.server["port"], debug=False) 
+    server.run(
+        port=config.server["port"], 
+        ssl_context=(config.server["cert_file"], config.server["key_file"]), 
+        debug=False) 

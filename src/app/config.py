@@ -35,10 +35,12 @@ db["name"] = "zerodrive"
 db["host"] = "raspberrypi"
 db["port"] = 4445
 db["user"] = "root"
-db["password"] = "password"
+db["password"] = "raspberry_pi_MYSQL!"  
 
 server = envdict("server")
 server["port"] = 40500
+server["cert_file"] = "/home/vlad/.local/share/mkcert/localhost.pem"
+server["key_file"] = "/home/vlad/.local/share/mkcert/localhost-key.pem"
 
 ldap_dev = envdict("ldap_dev")
 ldap_dev["host"] = "raspberrypi"
