@@ -71,7 +71,7 @@ class Login(Resource):
 
             return user_id
         except ldap3.core.exceptions.LDAPException as ex:
-            raise ZerodriveException(500, "Auth error: {}".format(ex.args[1]))
+            raise ZerodriveException(500, "Auth error: {}".format(str(ex)))
 
     # POST: login a user
     def post(self):
