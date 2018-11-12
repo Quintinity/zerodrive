@@ -34,13 +34,13 @@ db = envdict("db")
 db["name"] = "zerodrive"
 db["host"] = "raspberrypi"
 db["port"] = 4445
-db["user"] = "root"
-db["password"] = "raspberry_pi_MYSQL!"  
+db["user"] = "user"
+db["password"] = "password"  
 
 server = envdict("server")
 server["port"] = 40500
-server["cert_file"] = "/home/vlad/.local/share/mkcert/localhost.pem"
-server["key_file"] = "/home/vlad/.local/share/mkcert/localhost-key.pem"
+server["cert_file"] = "cert.pem"
+server["key_file"] = "key.pem"
 
 ldap_dev = envdict("ldap_dev")
 ldap_dev["host"] = "raspberrypi"
@@ -48,6 +48,6 @@ ldap_dev["port"] = 1389
 ldap_dev["use_tls"] = False
 
 ldap_unb = envdict("ldap_unb")
-ldap_unb["host"] = "ldap-student.cs.unb.ca"
+ldap_unb["host"] = "ldap-student"
 ldap_unb["port"] = 389
 ldap_unb["use_tls"] = True
