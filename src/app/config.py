@@ -26,7 +26,7 @@ class envdict(dict):
         if type(default_val) is int:
             val = int(val)
         elif type(default_val) is bool:
-            val = val.lower() == "true"
+            val = str(val).lower() == "true"
         return val
 
 # Default configuration
