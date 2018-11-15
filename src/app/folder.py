@@ -56,10 +56,20 @@ class FolderSpecific(Resource):
         cursor = connection.cursor()
 
         try:
-            cursor.execute("delete from Folder where id=%s and user_id=%s and parent_folder is not null", (folder_id, g.user_data["id"]))
+            cursor.execute("select user_id, parent_folder from Folder where id=%s", (folder_id))
             connection.commit()
-            if cursor.rowcount == 0:
+            folder_info = cursor.fetchone()
+
+            # Check info to see if we can actually delete this folder
+            if folder_info is None:
                 raise ZerodriveException(404, "No folder with the given ID exists for the current user.")
+            if folder_info["user_id"] != g.user_data["id"]:
+                raise ZerodriveException(401, "You do not have permission to delete this folder")
+            if folder_info["parent_folder"] is None:
+                raise ZerodriveException(401, "You cannot delete your root folder.")
+
+            cursor.execute("delete from Folder where id=%s", (folder_id))
+            connection.commit()
             return 200
         except pymysql.MySQLError as err:
             raise ZerodriveException(500, "A database error has occurred ({}): {}".format(err.args[0], err.args[1]))

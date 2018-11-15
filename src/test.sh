@@ -96,11 +96,13 @@ testcase "Try to create folder with duplicate name" 400 curl $CURL_PARAMS -H "Co
 testcase "Try to create folder under non-existent folder" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"name": "Folder1", "parent_folder_id": "-1"}' $BASEURL/folder
 curl $CURL_PARAMS -X DELETE $BASEURL/login
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+
 testcase "Try to create folder under another user's folder" 401 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder2\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 curl $CURL_PARAMS -X DELETE $BASEURL/login
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
 testcase "Delete a folder" 200 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to delete a folder that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/folder/0
+testcase "Try to delete a root folder" 401 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$ROOT_FOLDER_ID
 
 # Login and delete the account
 echo -e "\n== Local user account deletion =="
