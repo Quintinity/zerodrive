@@ -16,11 +16,15 @@ fi
 # If running on a UNB server, append my binaries folder to the path for programs like jq
 HOSTNAME_REGEX=".*.cs.unb.ca"
 if [[ $HOSTNAME =~ $HOSTNAME_REGEX ]]; then
-    PATH="$PATH:/home1/ugrads/vmarica/bin"
+    PATH="/home1/ugrads/vmarica/bin:$PATH"
 fi
 
-# Check if we have jq installed for formatting JSON data
+# Check if we have jq installed for parsing JSON data
 JQ_INSTALLED=$(which jq > /dev/null; echo "$?")
+if [ "$JQ_INSTALLED" != "0" ]; then
+    echo "Cannot find 'jq'! Please ensure it is available in the PATH."
+    exit 1
+fi
 
 PASSED_TEST_CASES=0
 FAILED_TEST_CASES=0
@@ -29,27 +33,23 @@ FAILED_TEST_CASES=0
 # you can use this function to pretty-print them.
 function print_error_response() {
     echo -ne "\tReason: "
-    if [ "$JQ_INSTALLED" = "0" ]; then
-        echo "$1" | jq ".message"
-    else
-        echo "$1"
-    fi
+    echo "$1" | jq ".message"
 }
 
 function testcase() {
-    title="$1"
+    local title="$1"
     shift;
-    EXPECTED_CODE="$1"
+    local EXPECTED_CODE="$1"
     shift;
     RESPONSE=$("$@" -w " CODE:%{http_code}")
 
     BODY=$(echo "$RESPONSE" | awk -F"CODE:" '{print $1}')
     CODE=$(echo "$RESPONSE" | awk -F"CODE:" '{print $2}' | xargs) # Use xargs to trim whitespace
 
-    RESULT=" OK "
-    COLOR=$(tput setaf 2 2>/dev/null)
-    COLOR_RESET=$(tput sgr0 2>/dev/null)
-    MSG=
+    local RESULT=" OK "
+    local COLOR=$(tput setaf 2 2>/dev/null)
+    local COLOR_RESET=$(tput sgr0 2>/dev/null)
+    local MSG=
     
     if [ $CODE != $EXPECTED_CODE ]; then
         RESULT="FAIL"
@@ -80,7 +80,27 @@ testcase "Logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
 
 echo -e "\n== LDAP user sessions =="
 testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
-testcase "Logging" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
+testcase "Logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
+
+# Test getting user data
+echo -e "\n== User data =="
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
+testcase "Get current user's data" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X GET $BASEURL/user
+ROOT_FOLDER_ID=$(echo "$BODY" | jq .root_folder_id)
+
+# Test creating and deleting folders
+echo -e "\n== Folders =="
+testcase "Create a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
+NEW_FOLDER_ID=$(echo "$BODY" | jq .new_folder_id)
+testcase "Try to create folder with duplicate name" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
+testcase "Try to create folder under non-existent folder" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"name": "Folder1", "parent_folder_id": "-1"}' $BASEURL/folder
+curl $CURL_PARAMS -X DELETE $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+testcase "Try to create folder under another user's folder" 401 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder2\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
+curl $CURL_PARAMS -X DELETE $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
+testcase "Delete a folder" 200 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$NEW_FOLDER_ID
+testcase "Try to delete a folder that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/folder/0
 
 # Login and delete the account
 echo -e "\n== Local user account deletion =="

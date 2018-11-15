@@ -18,8 +18,11 @@ import os, pymysql
 MAX_STORAGE_SPACE = 500 * pow(2, 20) # Give every new account 500 MB of storage space
 
 class User(Resource):
+    # GET: retrieves information about about the current user
+    # There is no way to query information about specific users since it's not needed
+    @requires_auth
     def get(self):
-        pass
+        return g.user_data, 200
 
     # POST: create a new user account
     def post(self):
@@ -44,12 +47,14 @@ class User(Resource):
             query = "insert into User(username, hashpw, salt, max_storage_space) values(%s, %s, %s, %s)"
             cur.execute(query, (username, hashpw, salt, MAX_STORAGE_SPACE))
             connection.commit()
+            cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("ROOT", cur.lastrowid, None))
+            connection.commit()
             cur.close()
         except pymysql.MySQLError as err:
             code = err.args[0]
             if code == 1062:
                 raise ZerodriveException(400, "Username is already in use.")
-            raise ZerodriveException(400, "A database error has occurred ({}).".format(code))
+            raise ZerodriveException(500, "A database error has occurred ({}).".format(err.args[1]))
         return 200
 
     @requires_auth
@@ -58,7 +63,7 @@ class User(Resource):
 
         try:
             cur = connection.cursor()
-            cur.execute("delete from User where id=%s", (g.user_id))
+            cur.execute("delete from User where id=%s", (g.user_data["id"]))
             connection.commit()
             cur.close()
 

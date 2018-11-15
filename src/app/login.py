@@ -61,10 +61,12 @@ class Login(Resource):
             user_id = None
             result = cur.fetchone()
             if result is None:
-                query = "insert into User(username, is_unb_account, max_storage_space) values(%s, %s, %s)"
-                cur.execute(query, (username, True, MAX_STORAGE_SPACE))
+                cur.execute("insert into User(username, is_unb_account, max_storage_space) values(%s, %s, %s)", 
+                    (username, True, MAX_STORAGE_SPACE))
                 db_connection.commit()
                 user_id = cur.lastrowid
+                cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("ROOT", user_id, None))
+                db_connection.commit()
             else:
                 user_id = result["id"]
             cur.close()

@@ -19,7 +19,7 @@ create table User(
 );
 
 create table Folder(
-    id int not null auto_increment,
+    id int not null auto_increment = 1,
     name varchar(128) not null,
     user_id int not null,
     parent_folder int,
@@ -27,7 +27,7 @@ create table Folder(
     last_modified timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 
     primary key(id),
-    foreign key(user_id) references User(id),
+    foreign key(user_id) references User(id) on delete cascade,
     foreign key(parent_folder) references Folder(id) on delete cascade,
     unique key ensure_unique_names_in_folder (name, parent_folder)
 

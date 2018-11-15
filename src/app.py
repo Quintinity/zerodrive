@@ -7,7 +7,7 @@
 
 from flask import Flask, session, redirect, url_for, g, jsonify
 from flask_restful import Api
-from app import util, config, User, Login, ZerodriveException
+from app import util, config, User, Login, Folder, FolderSpecific, ZerodriveException
 import os
 
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -34,6 +34,8 @@ def cleanup_after_request(a):
 api = Api(server)
 api.add_resource(User, "/user")
 api.add_resource(Login, "/login")
+api.add_resource(Folder, "/folder")
+api.add_resource(FolderSpecific, "/folder/<int:folder_id>")
 
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
