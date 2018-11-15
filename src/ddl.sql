@@ -19,7 +19,7 @@ create table User(
 );
 
 create table Folder(
-    id int not null auto_increment = 1,
+    id int not null auto_increment,
     name varchar(128) not null,
     user_id int not null,
     parent_folder int,
@@ -30,8 +30,8 @@ create table Folder(
     foreign key(user_id) references User(id) on delete cascade,
     foreign key(parent_folder) references Folder(id) on delete cascade,
     unique key ensure_unique_names_in_folder (name, parent_folder)
-
 );
+alter table Folder auto_increment = 1;
 
 create table File(
     id int not null auto_increment,
