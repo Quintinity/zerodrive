@@ -1,21 +1,24 @@
 #!/bin/bash
-IP=info3103.cs.unb.ca
-PORT=40500
-BASEURL=https://$IP:$PORT
+
+HOST="${ZERODRIVE_SERVER_HOST:-127.0.0.1}"
+PORT="${ZERODRIVE_SERVER_PORT:-40500}"
+BASEURL=https://$HOST:$PORT
+
+echo -e "Running tests on $BASEURL"
 
 COOKIE_JAR_FILE="cookiejar.bin"
 CURL_PARAMS="-s -k -b $COOKIE_JAR_FILE -c $COOKIE_JAR_FILE"
 
 # Use netcat to scan port to check if the server is running
-nc -z $IP $PORT
+nc -z $HOST $PORT
 if [ "$?" = "1" ]; then
     echo "Server not running at $BASEURL"
     exit 1
 fi
 
-# If running on a UNB server, append my binaries folder to the path for programs like jq
-HOSTNAME_REGEX=".*.cs.unb.ca"
-if [[ $HOSTNAME =~ $HOSTNAME_REGEX ]]; then
+# If running on a UNB CS server, append my binaries folder to the path for programs like jq
+UNB_HOSTNAME_REGEX=".*.cs.unb.ca"
+if [[ $HOSTNAME =~ $UNB_HOSTNAME_REGEX ]]; then
     PATH="/home1/ugrads/vmarica/bin:$PATH"
 fi
 

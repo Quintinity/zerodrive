@@ -34,7 +34,7 @@ db = envdict("db")
 db["name"] = "zerodrive"
 db["host"] = "127.0.0.1"
 db["port"] = 4445
-db["user"] = "user"
+db["user"] = "root"
 db["password"] = "password"  
 
 server = envdict("server")
