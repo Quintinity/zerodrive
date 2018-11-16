@@ -39,6 +39,7 @@ db["password"] = "password"
 
 server = envdict("server")
 server["port"] = 40500
+server["host"] = "127.0.0.1"
 server["cert_file"] = "cert.pem"
 server["key_file"] = "key.pem"
 

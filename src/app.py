@@ -40,6 +40,7 @@ api.add_resource(FolderSpecific, "/folder/<int:folder_id>")
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
     server.run(
+        host=config.server["host"],
         port=config.server["port"], 
         ssl_context=(config.server["cert_file"], config.server["key_file"]), 
-        debug=False) 
+        debug=False)

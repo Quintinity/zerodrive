@@ -1,5 +1,5 @@
 #!/bin/bash
-IP=127.0.0.1
+IP=info3103.cs.unb.ca
 PORT=40500
 BASEURL=https://$IP:$PORT
 
@@ -102,6 +102,9 @@ curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "
 
 testcase "Rename a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to rename a folder that doesn't exist" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/0
+
+testcase "Get folder information" 200 curl $CURL_PARAMS -X GET $BASEURL/folder/$NEW_FOLDER_ID
+echo $BODY | jq .
 
 testcase "Delete a folder" 200 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to delete a folder that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/folder/0

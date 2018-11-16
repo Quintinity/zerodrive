@@ -47,7 +47,7 @@ class User(Resource):
             query = "insert into User(username, hashpw, salt, max_storage_space) values(%s, %s, %s, %s)"
             cur.execute(query, (username, hashpw, salt, MAX_STORAGE_SPACE))
             connection.commit()
-            cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("ROOT", cur.lastrowid, None))
+            cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("", cur.lastrowid, None))
             connection.commit()
             cur.close()
         except pymysql.MySQLError as err:

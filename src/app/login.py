@@ -65,7 +65,7 @@ class Login(Resource):
                     (username, True, MAX_STORAGE_SPACE))
                 db_connection.commit()
                 user_id = cur.lastrowid
-                cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("ROOT", user_id, None))
+                cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("", user_id, None))
                 db_connection.commit()
             else:
                 user_id = result["id"]

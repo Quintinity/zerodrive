@@ -108,4 +108,37 @@ class FolderSpecific(Resource):
     # GET: retrieves information about a folder and its contents
     @requires_auth
     def get(self, folder_id):
+
+        connection = util.open_db_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("select name, user_id, parent_folder, last_modified from Folder where id=%s", (folder_id))
+            connection.commit()
+            folder_info = cursor.fetchone()
+            validate_folder(folder_info)
+
+            # The version of MariaDB using on the info3103 server is old and doesn't support recursive queries
+            # So I have to do this in order to build up the hierarchy
+            hierarchy = []
+            parent_folder = folder_info["parent_folder"]
+            while parent_folder is not None:
+                cursor.execute("select name, parent_folder from Folder where id=%s", (parent_folder))
+                connection.commit()
+                result = cursor.fetchone()
+                hierarchy.insert(0, {"name": result["name"], "id": parent_folder})
+                parent_folder = result["parent_folder"]
+
+            contents = []
+            return {
+                "name": folder_info["name"],
+                "id": folder_id,
+                "last_modified": str(folder_info["last_modified"]),
+                "hierarchy": hierarchy,
+                "contents": contents
+            }, 200
+        except pymysql.MySQLError as err:
+            raise ZerodriveException(500, "A database error has occurred ({}): {}".format(err.args[0], err.args[1]))
+        finally:
+            cursor.close()
+
         return 200 # TODO
