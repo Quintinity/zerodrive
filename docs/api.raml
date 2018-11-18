@@ -95,7 +95,7 @@ types:
     body:
       type: "object"
       properties:
-        email:
+        username:
           type: "string"
         password:
           type: "string"
@@ -113,6 +113,7 @@ types:
           type: "Error"
   delete:
     displayName: "Logs out the current user"
+    description: "Fails if the user is not logged in."
     headers:
       Cookie:
         type: "string"
@@ -148,8 +149,9 @@ types:
         body:
           type: "object"
           properties:
-            id:
+            new_folder_id:
               type: "integer"
+              description: "The ID of the new folder"
       400:
         description: "No session cookie was included in the request."
       401:
@@ -257,6 +259,7 @@ types:
 /file:
   post:
     displayName: "Upload a file"
+    description: "Fails if the user doesn't own the folder uploading to."
     queryParameters:
       folder:
         type: "integer"
@@ -275,14 +278,18 @@ types:
           file:
             type: "file"
             description: "The contents of the file to upload."
+          parent_folder:
+            type: "integer"
+            description: "The ID of the folder to upload to"
     responses:
       200:
         description: "File uploaded successfully."
         body:
-          type: "integer"
-          example:
-            value: "The ID of the uploaded file."
-            strict: false
+          type: "object"
+          properties:
+            new_file_id:
+              type: "integer"
+              description: "The ID of the uploaded file."
       400:
         description: "Request was invalid."
         body:
