@@ -32,6 +32,9 @@ fi
 PASSED_TEST_CASES=0
 FAILED_TEST_CASES=0
 
+LDAP_USERNAME=developer
+LDAP_PASSWORD=abc123
+
 # Error responses all have the the same format, so
 # you can use this function to pretty-print them.
 function print_error_response() {
@@ -79,21 +82,24 @@ testcase "Duplicate username"   400 curl $CURL_PARAMS -H "Content-Type: applicat
 # Login/logout tests
 echo -e "\n== Local user sessions =="
 testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+testcase "Try logging in when already logged in" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
 testcase "Logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
 
 echo -e "\n== LDAP user sessions =="
-testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
+testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
+testcase "Try logging in when already logged in" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
 testcase "Logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
 
 # Test getting user data
 echo -e "\n== User data =="
-curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
 testcase "Get current user's data" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X GET $BASEURL/user
 ROOT_FOLDER_ID=$(echo "$BODY" | jq .root_folder_id)
 
 # Test creating, updating, and deleting folders
 echo -e "\n== Folders =="
 testcase "Create a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
+
 NEW_FOLDER_ID=$(echo "$BODY" | jq .new_folder_id)
 testcase "Try to create folder with duplicate name" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 testcase "Try to create folder under non-existent folder" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"name": "Folder1", "parent_folder_id": "-1"}' $BASEURL/folder
@@ -101,7 +107,7 @@ curl $CURL_PARAMS -X DELETE $BASEURL/login
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
 testcase "Try to create folder under another user's folder" 401 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder2\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 curl $CURL_PARAMS -X DELETE $BASEURL/login
-curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
 
 testcase "Rename a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to rename a folder that doesn't exist" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/0
@@ -134,16 +140,15 @@ testcase "Try to delete a file that doesn't exist" 404 curl $CURL_PARAMS -X DELE
 rm $DUMMY_FILE
 
 # Login and delete the account
+echo -e "\n== LDAP user account deletion =="
+testcase "Delete account"  200 curl $CURL_PARAMS -X DELETE $BASEURL/user
+testcase "Invalid session" 400 curl $CURL_PARAMS -X DELETE $BASEURL/user
+
+# Login and delete the account
 echo -e "\n== Local user account deletion =="
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
 testcase "Delete account"  200 curl $CURL_PARAMS -X DELETE $BASEURL/user
-testcase "Invalid session" 401 curl $CURL_PARAMS -X DELETE $BASEURL/user
-
-# Login and delete the account
-echo -e "\n== LDAP user account deletion =="
-curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "developer", "password": "abc123", "auth_type": "dev"}' $BASEURL/login
-testcase "Delete account"  200 curl $CURL_PARAMS -X DELETE $BASEURL/user
-testcase "Invalid session" 401 curl $CURL_PARAMS -X DELETE $BASEURL/user
+testcase "Invalid session" 400 curl $CURL_PARAMS -X DELETE $BASEURL/user
 
 echo -e "\n$PASSED_TEST_CASES test(s) passed, $FAILED_TEST_CASES test(s) failed."
 

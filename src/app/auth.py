@@ -1,7 +1,7 @@
 SESSION_TOKEN_LIFETIME = 1 # Number of days that session tokens live
 SESSION_COOKIE_NAME = "session"
 
-from flask import request, g
+from flask import request, g, make_response, jsonify
 from . import util
 from .exceptions import ZerodriveException
 from datetime import datetime
@@ -27,7 +27,9 @@ def requires_auth(func):
             result = cur.fetchone()
 
             if result is None:
-                raise ZerodriveException(401, "Invalid session token.")
+                response = make_response((jsonify({"message": "Invalid session token"}), 400))
+                response.set_cookie(SESSION_COOKIE_NAME, max_age=0)
+                return response
 
             # Delete the session is it has expired and inform the user of this
             if result["expiry_time"] < datetime.utcnow():
@@ -35,15 +37,11 @@ def requires_auth(func):
                 connection.commit()
                 raise ZerodriveException(401, "This session has expired. Please login in again.")
 
-            # Refresh the token
-            expiry_datetime = datetime.utcnow()
-            expiry_datetime = expiry_datetime.replace(day=expiry_datetime.day + SESSION_TOKEN_LIFETIME, microsecond=0)
-            cur.execute("update Session set expiry_time=%s where token=%s", (expiry_datetime, session_token))
-            connection.commit()
-
+            # This will refresh the token expiry time in the after_request event
             g.refresh_session_token = True
 
             del result["expiry_time"] # not needed as part of the user data
+            g.session_token = session_token
             g.user_data = result
         except pymysql.MySQLError as err:
             raise ZerodriveException(500, "A database error has occurred: {}".format(err.args[1]))

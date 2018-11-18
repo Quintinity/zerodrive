@@ -15,7 +15,8 @@
 
 from flask import Flask, session, redirect, url_for, g, jsonify
 from flask_restful import Api
-from app import util, config, User, Login, Folder, FolderSpecific, File, FileSpecific, ZerodriveException
+from app import util, config, auth, User, Login, Folder, FolderSpecific, File, FileSpecific, ZerodriveException
+from datetime import datetime
 import os
 
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -34,8 +35,15 @@ def on_exception(exception):
 @server.after_request
 def after_request(res):
     if "refresh_session_token" in g and g.refresh_session_token == True:
-        print(res.headers.get("Set-Cookie", ""))
-        print("refresh_session_token")
+        connection = util.open_db_connection()
+        cursor = connection.cursor()
+
+        expiry_datetime = datetime.utcnow()
+        expiry_datetime = expiry_datetime.replace(day=expiry_datetime.day + auth.SESSION_TOKEN_LIFETIME, microsecond=0)
+        cursor.execute("update Session set expiry_time=%s where token=%s", (expiry_datetime, g.session_token))
+        connection.commit()
+
+        res.set_cookie(auth.SESSION_COOKIE_NAME, g.session_token, secure=True, httponly=True, max_age=auth.SESSION_TOKEN_LIFETIME * 24 * 60 * 60)
     return res
 
 # Close any database connection after any request ends
@@ -43,7 +51,6 @@ def after_request(res):
 def cleanup_after_request(a):
     if "db" in g:
         g.db.close()
-
 
 # Add resource endpoints
 api = Api(server)

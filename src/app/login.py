@@ -85,6 +85,11 @@ class Login(Resource):
         password = body["password"].strip()
         auth_type = body.get("auth_type", "").strip()
 
+        # Reject request if the user is already logged in
+        old_session_token = request.cookies.get(auth.SESSION_COOKIE_NAME)
+        if old_session_token is not None:
+            raise ZerodriveException(400, "You are already logged in")
+
         connection = util.open_db_connection()
 
         try:
@@ -102,12 +107,6 @@ class Login(Resource):
                 raise ZerodriveException(400, "Invalid username or password.")
 
             cur = connection.cursor()
-
-            # Invalidate existing session token, if it exists
-            old_session_token = request.cookies.get(auth.SESSION_COOKIE_NAME)
-            if old_session_token is not None:
-                cur.execute("delete from Session where token = %s", (old_session_token))
-                connection.commit()
 
             # Generate and store new session token
             session_token = os.urandom(32).hex()
