@@ -27,9 +27,11 @@ class Folder(Resource):
         if body is None or not "name" in body or not "parent_folder_id" in body:
             raise ZerodriveException(400, "Invalid request body - missing parameter.")
 
-        # TODO: ensure values have the right types
         folder_name = body["name"]
         parent_folder_id = body["parent_folder_id"]
+
+        if len(folder_name) == 0:
+            raise ZerodriveException(400, "Folder name cannot be empty")
 
         connection = util.open_db_connection()
         cursor = connection.cursor()
@@ -128,7 +130,11 @@ class FolderSpecific(Resource):
                 hierarchy.insert(0, {"name": result["name"], "id": parent_folder})
                 parent_folder = result["parent_folder"]
 
-            contents = []
+            cursor.execute("select id, name, null as size_bytes, 'Folder' as type from Folder where parent_folder=%s union \
+                            select id, name, size_bytes, 'File' as type from File where parent_folder=%s", (folder_id, folder_id))
+            connection.commit()
+            contents = cursor.fetchall()
+
             return {
                 "name": folder_info["name"],
                 "id": folder_id,

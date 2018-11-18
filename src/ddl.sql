@@ -48,6 +48,7 @@ create table File(
     foreign key(parent_folder) references Folder(id) on delete cascade,
     unique key ensure_unique_names_in_folder (name, parent_folder)
 );
+alter table File auto_increment = 1;
 
 create table Session(
     token varchar(64) not null,

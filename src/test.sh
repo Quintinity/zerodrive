@@ -91,7 +91,7 @@ curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "
 testcase "Get current user's data" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X GET $BASEURL/user
 ROOT_FOLDER_ID=$(echo "$BODY" | jq .root_folder_id)
 
-# Test creating and deleting folders
+# Test creating, updating, and deleting folders
 echo -e "\n== Folders =="
 testcase "Create a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 NEW_FOLDER_ID=$(echo "$BODY" | jq .new_folder_id)
@@ -106,12 +106,32 @@ curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "
 testcase "Rename a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to rename a folder that doesn't exist" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/0
 
-testcase "Get folder information" 200 curl $CURL_PARAMS -X GET $BASEURL/folder/$NEW_FOLDER_ID
-echo $BODY | jq .
+testcase "Get folder info" 200 curl $CURL_PARAMS -X GET $BASEURL/folder/$NEW_FOLDER_ID
+testcase "Try to get info from a folder that doesn't exist" 404 curl $CURL_PARAMS -X GET $BASEURL/folder/0
 
 testcase "Delete a folder" 200 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to delete a folder that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/folder/0
 testcase "Try to delete a root folder" 401 curl $CURL_PARAMS -X DELETE $BASEURL/folder/$ROOT_FOLDER_ID
+
+# Test file upload, download, renaming, and deletion
+echo -e "\n== Files =="
+DUMMY_FILE="testfile.txt"
+echo "Hello, world!" > $DUMMY_FILE
+testcase "Upload a file" 200 curl $CURL_PARAMS -F "parent_folder=$ROOT_FOLDER_ID" -F "file=@$DUMMY_FILE" $BASEURL/file
+NEW_FILE_ID=$(echo $BODY | jq .new_file_id)
+testcase "Upload a duplicate file" 403 curl $CURL_PARAMS -F "parent_folder=$ROOT_FOLDER_ID" -F "file=@$DUMMY_FILE" $BASEURL/file
+testcase "Try to upload a file to a folder that doesn't exist" 404 curl $CURL_PARAMS -F "parent_folder=0" -F "file=@$DUMMY_FILE" $BASEURL/file
+
+testcase "Download a file" 200 curl $CURL_PARAMS -X GET $BASEURL/file/$NEW_FILE_ID
+testcase "Try to download a file that doesn't exist" 404 curl $CURL_PARAMS -X GET $BASEURL/file/0
+
+testcase "Rename a file" 200 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_file_name": "somefile.txt"}' $BASEURL/file/$NEW_FILE_ID
+testcase "Try to rename a file that doesn't exist" 404 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_file_name": "somefile.txt"}' $BASEURL/file/0
+
+testcase "Delete a file" 200 curl $CURL_PARAMS -X DELETE $BASEURL/file/$NEW_FILE_ID
+testcase "Try to delete a file that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/file/$NEW_FILE_ID
+
+rm $DUMMY_FILE
 
 # Login and delete the account
 echo -e "\n== Local user account deletion =="
