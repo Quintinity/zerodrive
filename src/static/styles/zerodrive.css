@@ -1,0 +1,22 @@
+.zd-bg-blue {
+    background-color: #435cff;
+}
+
+.zd-icon {
+    color: white;
+    padding-right: 10px;
+    font-size: 20px;
+    vertical-align: inherit;
+}
+
+.zd-bold {
+    font-weight: 700;
+}
+
+.zd-hero-banner {
+    height: 450px;
+}
+
+.zd-use-font {
+    font-family: 'Raleway', sans-serif;
+}

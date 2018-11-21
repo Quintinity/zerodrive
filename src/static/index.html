@@ -6,9 +6,73 @@
 
         <script src="https://unpkg.com/vue@2.5.17/dist/vue.min.js"></script>
         <script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
-        <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.min.js"></script>
+        <script src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,700" rel="stylesheet">
+        <link rel="stylesheet" href="/static/styles/zerodrive.css">
+
+        <!-- Bootstrap -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">
+            <!-- Top navbar-->
+            <nav class="navbar navbar-expand-md navbar-dark zd-bg-blue">
+                <div class="d-flex mx-auto" style="width: 100%; max-width: 1100px">
+                    <i class="fas fa-cloud zd-icon d-flex align-items-center justify-content-center"></i>
+                    <a class="navbar-brand zd-bold mr-auto zd-use-font" href="#">Zerodrive</a>
+                    <a class="btn ml-auto btn-outline-light zd-use-font" href="/signin">Sign in</a>
+                </div>
+            </nav>
+
+            <!-- Hero banner -->
+            <div class="zd-hero-banner zd-bg-blue">
+                <div class="mx-auto px-5 pt-5" style="width: 100%; max-width: 1100px;">
+                    <p class="zd-use-font" style="font-size: 60px; font-weight: 700; color: white; margin-top: 60px; margin-right: 200px; line-height: 70px">
+                        Free cloud storage for all of your files
+                    </p>
+                    <a class="btn btn-lg ml-auto btn-outline-light mt-5 zd-use-font" href="/signin">Sign in with your UNB account</a>
+                </div>
+            </div>
+
+            <div class="mx-auto pt-5" style="width: 100%; max-width: 1100px;">
+                <div class="row pt-5">
+                    <div class="col align-items-center d-flex flex-column">
+                        <i class="fas fa-lock zd-icon mb-3" style="color: #435cff; font-size: 80px"></i>
+                        <p class="zd-use-font text-center mb-0" style="font-weight: 700; font-size: 24px; color: #0d0d4f">Pretty Secure</p>
+                        <p class="text-muted text-center">Your files are probably safe</p>
+                    </div>
+                    <div class="col align-items-center d-flex flex-column">
+                            <i class="fas fa-hdd zd-icon mb-3" style="color: #435cff; font-size: 80px"></i>
+                            <p class="zd-use-font text-center mb-0" style="font-weight: 700; font-size: 24px; color: #0d0d4f">Unlimited Storage</p>
+                            <p class="text-muted text-center">Up to 100MB per account</p>
+                    </div>
+                        <div class="col align-items-center d-flex flex-column">
+                                <i class="fas fa-bolt zd-icon mb-3" style="color: #435cff; font-size: 80px"></i>
+                                <p class="zd-use-font text-center mb-0" style="font-weight: 700; font-size: 24px; color: #0d0d4f">Lightning Fast</p>
+                                <p class="text-muted text-center">As long as no one else is using it</p>
+                        </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="navbar fixed-bottom border-top mx-auto" style="width: 100%; max-width: 1100px;">
+                <div class="row align-items-center w-100">
+                    <div class="col-sm-auto">
+                        <i class="fas fa-cloud zd-icon align-items-left justify-content-center" style="color:#435cff"></i>
+                        <small class="d-block mb-3 text-muted">&copy; 2018 Vlad Marica</small>
+                    </div> 
+                    <div class="col w-100">
+                        <p class="text-muted h-100 text-right align-center" style="font-size: 12px">This is term project for the INFO3103 course at the University of New Brunswick</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="/static/js/main.js"></script>
     </body>
 </html>
