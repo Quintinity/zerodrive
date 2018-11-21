@@ -22,7 +22,7 @@ import os
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
 # Create Flask application and initialize it
-server = Flask("zerodrive")
+server = Flask(__name__, static_folder="static")
 
 # Custom exception handler
 @server.errorhandler(ZerodriveException)
@@ -60,6 +60,12 @@ api.add_resource(Folder, "/folder")
 api.add_resource(FolderSpecific, "/folder/<int:folder_id>")
 api.add_resource(File, "/file")
 api.add_resource(FileSpecific, "/file/<int:file_id>")
+
+# Serve index.html as a fallback route, which enables the Single Page Application
+@server.route("/", defaults = {"path": ""})
+@server.route("/<path:path>")
+def serve_static(path):
+    return server.send_static_file("index.html")
 
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
