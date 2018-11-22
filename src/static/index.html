@@ -23,40 +23,55 @@
             <nav class="navbar navbar-expand-md navbar-dark zd-bg-blue">
                 <div class="d-flex zd-center mx-auto">
                     <i class="fas fa-cloud zd-icon d-flex align-items-center justify-content-center" style="color: white"></i>
-                    <a class="navbar-brand zd-bold mr-auto zd-use-font" href="#">Zerodrive</a>
-                    <a class="btn ml-auto btn-outline-light zd-use-font" href="/signin">Sign in</a>
+                    <router-link class="navbar-brand zd-bold mr-auto zd-use-font" to="/">Zerodrive</router-link>
+                    <router-link class="btn ml-auto btn-outline-light zd-use-font" to="/signin">Sign in</a>
                 </div>
             </nav>
+            
+            <router-view></router-view>
 
-            <!-- Hero banner -->
-            <div class="zd-hero-banner zd-bg-blue">
+            <script type="text/x-template" id="homepage-template">
+                <div>
+                    <!-- Hero banner -->
+                    <div class="zd-hero-banner zd-bg-blue">
+                        <div class="mx-auto zd-center px-5 pt-5">
+                            <p class="zd-use-font zd-bold zd-banner-text">
+                                Free cloud storage for all of your files
+                            </p>
+                            <router-link class="btn btn-lg ml-auto btn-outline-light mt-5 zd-use-font" to="/signin">Sign in with your UNB account</a>
+                        </div>
+                    </div>
+
+                    <div class="mx-auto zd-center pt-5">
+                        <div class="row pt-5">
+                            <div class="col align-items-center d-flex flex-column">
+                                <i class="fas fa-lock zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
+                                <p class="zd-use-font zd-bold zd-header text-center mb-0">Pretty Secure</p>
+                                <p class="text-muted text-center">Your files are probably safe</p>
+                            </div>
+                            <div class="col align-items-center d-flex flex-column">
+                                    <i class="fas fa-hdd zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
+                                    <p class="zd-use-font zd-bold zd-header text-center mb-0">Unlimited Storage</p>
+                                    <p class="text-muted text-center">Up to 100MB per account</p>
+                            </div>
+                            <div class="col align-items-center d-flex flex-column">
+                                <i class="fas fa-bolt zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
+                                <p class="zd-use-font zd-bold zd-header text-center mb-0">Lightning Fast</p>
+                                <p class="text-muted text-center">As long as no one else is using it</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </script>
+
+            <script type="text/x-template" id="page-404-template">
                 <div class="mx-auto zd-center px-5 pt-5">
-                    <p class="zd-use-font zd-bold zd-banner-text">
-                        Free cloud storage for all of your files
+                    <p class="zd-use-font zd-bold zd-fg-blue zd-banner-text" style="color: black">
+                        404 - Page Not Found
                     </p>
-                    <a class="btn btn-lg ml-auto btn-outline-light mt-5 zd-use-font" href="/signin">Sign in with your UNB account</a>
+                    <router-link class="btn btn-md ml-auto btn-outline-dark mt-5 zd-use-font" to="/">Go to Home</a>
                 </div>
-            </div>
-
-            <div class="mx-auto zd-center pt-5">
-                <div class="row pt-5">
-                    <div class="col align-items-center d-flex flex-column">
-                        <i class="fas fa-lock zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
-                        <p class="zd-use-font zd-bold zd-header text-center mb-0">Pretty Secure</p>
-                        <p class="text-muted text-center">Your files are probably safe</p>
-                    </div>
-                    <div class="col align-items-center d-flex flex-column">
-                            <i class="fas fa-hdd zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
-                            <p class="zd-use-font zd-bold zd-header text-center mb-0">Unlimited Storage</p>
-                            <p class="text-muted text-center">Up to 100MB per account</p>
-                    </div>
-                    <div class="col align-items-center d-flex flex-column">
-                        <i class="fas fa-bolt zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
-                        <p class="zd-use-font zd-bold zd-header text-center mb-0">Lightning Fast</p>
-                        <p class="text-muted text-center">As long as no one else is using it</p>
-                    </div>
-                </div>
-            </div>
+            </script>
 
             <!-- Footer -->
             <div class="navbar fixed-bottom border-top zd-center mx-auto">
