@@ -1,10 +1,14 @@
+body {
+    background-color: #f8f9fa;
+}
+
 .zd-bg-blue {
     background-color: #435cff;
 }
 
 .zd-fg-blue {
     color: #435cff;
-}
+}   
 
 .zd-icon {
     padding-right: 10px;
