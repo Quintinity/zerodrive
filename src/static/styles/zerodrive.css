@@ -1,5 +1,5 @@
 body {
-    background-color: #f8f9fa;
+    background-color: #ececec;
 }
 
 .zd-bg-blue {
@@ -45,4 +45,24 @@ body {
     margin-top: 60px;
     margin-right: 200px;
     line-height: 70px
+}
+
+input:focus, button:focus {
+    outline: none;
+    box-shadow: none !important;
+    color: #e0e6e8;
+}
+
+.zd-input {
+    border: 2px solid #e0e6e8 !important;
+    border-radius: 3px;
+    transition: border .15s;
+}
+
+.zd-input:focus, .zd-input:active {
+    border-color: #435cff !important;
+}
+
+.zd-input::placeholder {
+    color: #c6cbcc;
 }
