@@ -8,6 +8,7 @@ import LoginPage from "./components/pages/loginpage.vue";
 import ErrorPage from "./components/pages/errorpage.vue";
 
 import "./styles/zerodrive.css";
+import "./images/favicon.ico";
 
 import "bootstrap-vue";
 import 'bootstrap/dist/css/bootstrap.css';

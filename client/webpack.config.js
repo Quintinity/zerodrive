@@ -4,8 +4,9 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPl
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const HtmlBeautifyPlugin = require("html-beautify-webpack-plugin");
-const CompressionPlugin = require('compression-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CompressionPlugin = require("compression-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 const mode = process.env.NODE_ENV;
 if (mode === undefined) {
@@ -26,6 +27,7 @@ const config = {
             generateStatsFile: true,
             statsOptions: { source: false }
         }),*/
+        new CleanWebpackPlugin(["./dist"]),
         new HtmlWebpackPlugin({ template: "./src/index.html" }),
         new HtmlBeautifyPlugin({
             config: {
@@ -56,10 +58,10 @@ const config = {
                 }
             },
             {
-                test: /\.(png|jpg|gif|svg)$/,
+                test: /\.(png|jpg|gif|svg|ico)$/,
                 loader: "file-loader",
                 options: {
-                    name: "[name].[ext]?[hash]"
+                    name: "[name].[ext]"
                 }
             },
             {
