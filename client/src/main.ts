@@ -31,8 +31,5 @@ new Vue({
         text: "Hello, world!"
     },
     router: router,
-    render: create => create(main),
-    created: function() {
-        console.log("Zerodrive running in " + MODE);
-    }
+    render: create => create(main)
 }).$mount("#app");
