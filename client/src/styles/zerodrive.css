@@ -1,9 +1,5 @@
-body {
-    background-color: #ececec;
-}
-
 .zd-bg-blue {
-    background-color: #435cff;
+    background-color: #435cff !important;
 }
 
 .zd-fg-blue {
@@ -17,7 +13,11 @@ body {
 }
 
 .zd-bold {
-    font-weight: 700;
+    font-weight: 700 !important;
+}
+
+.zd-button {
+    border-width: 0px;
 }
 
 .zd-hero-banner {

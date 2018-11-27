@@ -5,9 +5,15 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const HtmlBeautifyPlugin = require("html-beautify-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+const mode = process.env.NODE_ENV;
+if (mode === undefined) {
+    throw Error("NODE_ENV is not set!");
+}
 
 const config = {
-    mode: "development",
+    mode: mode,
     entry: "./src/main.ts",
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -15,14 +21,12 @@ const config = {
         filename: "bundle.js"
     },
     plugins: [
-        new BundleAnalyzerPlugin({
+        /*new BundleAnalyzerPlugin({
             analyzerMode: "disabled",
             generateStatsFile: true,
             statsOptions: { source: false }
-        }),
-        new HtmlWebpackPlugin({
-            template: "./src/index.html"
-        }),
+        }),*/
+        new HtmlWebpackPlugin({ template: "./src/index.html" }),
         new HtmlBeautifyPlugin({
             config: {
                 html: {
@@ -33,6 +37,7 @@ const config = {
             }
         }),
         new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({ filename: "style.css" }),
         new CompressionPlugin({
             filename: "[path].gz[query]",
             algorithm: "gzip",
@@ -57,7 +62,13 @@ const config = {
                     name: "[name].[ext]?[hash]"
                 }
             },
-            { test: /\.css$/, use: ["vue-style-loader", "css-loader"] }
+            {
+                test: /\.css$/, 
+                use: [
+                    mode === "production" ? MiniCssExtractPlugin.loader : "vue-style-loader", 
+                    "css-loader"
+                ]
+            }
         ]
     },
     resolve: {
@@ -76,11 +87,16 @@ const config = {
 };
 
 module.exports = (env, argv) => {
-    if (argv.mode === "development") {
+    if (mode === "development") {
         config.devtool = "eval-source-map";
     }
-    else if (argv.mode === "production") {
+    else if (mode === "production") {
         config.devtool = "source-map";
     }
+
+    config.plugins.push(new webpack.DefinePlugin({
+        "MODE": JSON.stringify(config.mode)
+    }));
+
     return config;
 };

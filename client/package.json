@@ -5,16 +5,18 @@
     "private": true,
     "main": "",
     "scripts": {
-        "build-dev": "webpack --mode development --hide-modules",
-        "build-prod": "webpack --mode production --hide-modules",
+        "build-dev": "cross-env NODE_ENV=development webpack --hide-modules",
+        "build-prod": "cross-env NODE_ENV=production webpack --hide-modules",
         "start-dev": "webpack-dev-server --open",
         "analyze": "webpack-bundle-analyzer dist/stats.json --port 9000"
     },
     "author": "Vlad Marica",
     "license": "MIT",
     "dependencies": {
+        "axios": "^0.18.0",
         "bootstrap-vue": "^2.0.0-rc.11",
         "vue": "^2.5.17",
+        "vue-property-decorator": "^7.2.0",
         "vue-router": "^3.0.2"
     },
     "devDependencies": {

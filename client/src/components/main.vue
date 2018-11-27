@@ -1,21 +1,24 @@
 <template>
     <div>
         <topbar></topbar>
+        <router-view></router-view>
+        <bottombar></bottombar>
     </div>
 </template>
 
 <script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
 
-import Vue from 'vue'
 import topbar from "./topbar.vue";
+import bottombar from "./bottombar.vue";
 
-export default Vue.extend({
-    components: {
-        topbar
-    }
-});
+@Component({components: { topbar, bottombar }})
+export default class Main extends Vue {}
 </script>
 
 <style>
+body {
+    background-color: #fbfbfb !important;
+}
 </style>
-
