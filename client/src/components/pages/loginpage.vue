@@ -6,16 +6,16 @@
             <form class="zd-use-font mx-auto pt-3" style="width: 90%; text-align: left">
                 <div class="form-group">
                     <label class="zd-bold" for="inputUsername" style="color: #383d41">UNB Username</label>
-                    <input type="text" class="form-control zd-input" id="inputUsername" aria-describedby="emailHelp" placeholder="Enter username">
+                    <input type="text" v-model="username" class="form-control zd-input" id="inputUsername" aria-describedby="emailHelp" placeholder="Enter username">
                     <small id="emailHelp" class="form-text text-muted">This is your UNB computer science username and password.</small>
                 </div>
                 
                 <div class="form-group">
                     <label class="zd-bold" for="inputPassword" style="color: #383d41">Password</label>
-                    <input type="password" class="form-control zd-input" id="inputPassword" placeholder="Enter password">
+                    <input type="password" v-model="password" class="form-control zd-input" id="inputPassword" placeholder="Enter password">
                 </div>
                         
-                <button class="btn zd-use-font zd-bg-blue mb-4 mt-4 btn-lg btn-primary" type="submit" style="width: 100%">Submit</button>
+                <button v-on:click.prevent="submit" class="btn zd-use-font zd-bg-blue mb-4 mt-4 btn-lg btn-primary" style="width: 100%">Submit</button>
             </form>
         </div>
     </div> 
