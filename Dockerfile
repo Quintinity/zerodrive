@@ -1,7 +1,7 @@
 FROM debian:stretch-slim
 
 # Install Python 3
-RUN apt-get update && apt-get install python3 python3-pip
+RUN apt-get update && apt-get install -y python3 python3-pip libffi-dev
 
 # Update Pip
 RUN python3 -m pip install --upgrade pip
@@ -11,8 +11,8 @@ COPY ./server .
 COPY ./client/dist ./static
 
 ENV ZERODRIVE_SERVER_STATIC_FILE_DIR=./static
-ENV ZERODRIVE_CERT_FILE=/certs/cert.pem
-ENV ZERODRIVE_KEY_FILE=/certs/key.pem
+ENV ZERODRIVE_SERVER_CERT_FILE=/certs/cert.pem
+ENV ZERODRIVE_SERVER_KEY_FILE=/certs/key.pem
 
 RUN python3 -m pip install -r requirements.txt
 
