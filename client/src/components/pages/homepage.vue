@@ -10,7 +10,7 @@
             </div>
         </div>
 
-        <div class="mx-auto zd-center pt-5">
+        <div class="mx-auto zd-center pt-3">
             <div class="row pt-5">
                 <div class="col align-items-center d-flex flex-column">
                     <i class="fas fa-lock zd-fg-blue zd-icon mb-3" style="font-size: 80px"></i>
@@ -40,5 +40,6 @@ import Component from "vue-class-component";
 export default class HomePage extends Vue {}
 </script>
 
-<style>
+<style scope>
+
 </style>
