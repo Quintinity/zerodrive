@@ -13,12 +13,14 @@ if (mode === undefined) {
     throw Error("NODE_ENV is not set!");
 }
 
+const baseURL = process.env.ZERODRIVE_SERVER_BASE_URL || "/";
+
 const config = {
     mode: mode,
     entry: "./src/main.ts",
     output: {
         path: path.resolve(__dirname, "dist"),
-        publicPath: "/static/",
+        publicPath: baseURL + "static/",
         filename: "bundle.js"
     },
     plugins: [
@@ -97,7 +99,8 @@ module.exports = (env, argv) => {
     }
 
     config.plugins.push(new webpack.DefinePlugin({
-        "MODE": JSON.stringify(config.mode)
+        "MODE": JSON.stringify(config.mode),
+        "BASE_PATH": JSON.stringify(basePath)
     }));
 
     return config;

@@ -19,12 +19,15 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
     mode: MODE === "production" ? "history" : "hash",
+    base: BASE_PATH,
     routes: [
         { path: "/", component: HomePage },
         { path: "/login", component: LoginPage },
         { path: "*", component: ErrorPage, props: { statusCode: 404, statusReason: "Page not found"} }
     ]
 });
+
+console.log("BASE: " + BASE_PATH);
 
 new Vue({
     data: {

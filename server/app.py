@@ -22,7 +22,7 @@ import os
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
 # Create Flask application and initialize it
-server = Flask(__name__, static_folder=config.server["static_file_dir"], static_url_path="/static")
+server = Flask(__name__, static_folder=config.server["static_file_dir"], static_url_path=config.server["base_url"] + "/static")
 
 # Custom exception handler
 @server.errorhandler(ZerodriveException)

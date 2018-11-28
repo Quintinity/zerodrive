@@ -4,3 +4,4 @@ declare module "*.vue" {
 }
 
 declare var MODE: string;
+declare var BASE_PATH: string;

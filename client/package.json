@@ -7,7 +7,7 @@
     "scripts": {
         "build-dev": "cross-env NODE_ENV=development webpack --hide-modules",
         "build-prod": "cross-env NODE_ENV=production webpack --hide-modules",
-        "start-dev": "webpack-dev-server --open",
+        "start-dev": "cross-env NODE_ENV=development webpack-dev-server --open",
         "analyze": "webpack-bundle-analyzer dist/stats.json --port 9000"
     },
     "author": "Vlad Marica",
