@@ -50,7 +50,10 @@ const config = {
     ],
     module: {
         rules: [
-            { test: /\.vue$/, loader: "vue-loader" },
+            {
+                test: /\.vue$/,
+                loader: "vue-loader",
+            },
             {
                 test: /\.tsx?$/,
                 loader: "ts-loader",

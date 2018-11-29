@@ -1,4 +1,6 @@
 import Vue from "vue";
+Vue.config.devtools = true;
+
 import VueRouter from "vue-router";
 import "./component-hooks";
 

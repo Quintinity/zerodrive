@@ -90,14 +90,16 @@ class Login(Resource):
         if old_session_token is not None:
             raise ZerodriveException(400, "You are already logged in")
 
+        print("Opening db connection...")
         connection = util.open_db_connection()
-
+        print("Db connection opened!")
+        
         try:
             user_id = None
             if auth_type == "":
-                user_id = self.auth_db(username, password)
-            elif auth_type == "unb":
                 user_id = self.auth_ldap(username, password, self.ldap_server_unb, config.ldap_unb["use_tls"])
+            elif auth_type == "db":
+                user_id = self.auth_db(username, password)
             elif auth_type == "dev":
                 user_id = self.auth_ldap(username, password, self.ldap_server_dev, config.ldap_dev["use_tls"])
             else:

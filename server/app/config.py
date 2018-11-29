@@ -43,7 +43,7 @@ server["host"] = "127.0.0.1"
 server["cert_file"] = "cert.pem"
 server["key_file"] = "key.pem"
 server["static_file_dir"] = "../client/dist"
-server["base_url"] = "/"
+server["base_url"] = ""
 
 ldap_dev = envdict("ldap_dev")
 ldap_dev["host"] = "127.0.0.1"

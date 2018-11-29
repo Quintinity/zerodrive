@@ -2,7 +2,7 @@
    <div class="mx-auto zd-center px-5 pt-5 align-center">
         <p class="zd-use-font zd-bold zd-fg-blue text-center" style="font-size: 30px; color: #383d41">Log in to Zerodrive</p>
         
-        <div class="mx-auto mb-5 bg-white rounded text-center" style="width: 400px; height: 330px; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2)">
+        <div class="mx-auto mb-5 bg-white rounded text-center" style="width: 400px; height: 340px; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2)">
             <form class="zd-use-font mx-auto pt-3" style="width: 90%; text-align: left">
                 <div class="form-group">
                     <label class="zd-bold" for="inputUsername" style="color: #383d41">UNB Username</label>
@@ -14,8 +14,12 @@
                     <label class="zd-bold" for="inputPassword" style="color: #383d41">Password</label>
                     <input type="password" v-model="password" class="form-control zd-input" id="inputPassword" placeholder="Enter password">
                 </div>
-                        
-                <button v-on:click.prevent="submit" class="btn zd-use-font zd-bg-blue mb-4 mt-4 btn-lg btn-primary" style="width: 100%">Submit</button>
+                
+                <span class="align-center" v-bind:style="{visibility: errorMessage == null ? 'hidden' : 'visible'}" id="errorMessage">{{ errorMessage || "placeholder" }}</span>
+                <div v-if="loading" class="d-flex mb-3 mt-3" style="width: 100%">
+                    <div class="mx-auto lds-dual-ring"></div>
+                </div>
+                <button v-else v-on:click.prevent="submit" class="btn zd-use-font zd-bg-blue mb-3 mt-3 btn-lg btn-primary" style="width: 100%">Submit</button>
             </form>
         </div>
     </div> 
@@ -32,5 +36,13 @@ button {
 
 button:hover {
     background-color: #5163d8 !important;
+}
+
+.form-control::placeholder { 
+    color: #ced4da;
+}
+
+#errorMessage {
+    color: #ca2020;
 }
 </style>
