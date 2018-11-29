@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="$root.loggedIn != null">
         <topbar></topbar>
         <router-view></router-view>
         <bottombar></bottombar>

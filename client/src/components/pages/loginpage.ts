@@ -1,6 +1,9 @@
 import Vue from "vue";
+import { Route } from "vue-router";
 import Component from "vue-class-component";
 import axios from "axios";
+
+import { VueRoot } from "../../types";
 import "../../styles/spinners.css";
 
 @Component
@@ -10,11 +13,15 @@ export default class LoginPage extends Vue {
     errorMessage: string | null = null;
     loading: boolean = false;
 
-    created(): void {
-        console.log("Login page created!");
+    beforeRouteEnter(from: Route, to: Route, next: Function): void {
+        next((vm: LoginPage) => {
+            if ((vm.$root as VueRoot).loggedIn) {
+                next({ path: "/" });
+            }
+        });
     }
 
-    submit(): void {
+    async submit() {
         if (this.loading) return;
         
         var vm = this;
@@ -24,13 +31,16 @@ export default class LoginPage extends Vue {
         axios.post("/api/login", {
             username: this.username,
             password: this.password,
-        }).then(response => {
-            console.log(response);
-            vm.loading = false;
+        }).then(async response => {
+            const root = vm.$root as VueRoot;
+            await root.refreshUserData();
+
+            if (response.status === 200) {
+                this.$router.replace("/");
+            }
         }).catch(error => {
             vm.errorMessage = error.response.data.message;
             vm.loading = false;
-            console.log(error.response);
         });
     }
 }

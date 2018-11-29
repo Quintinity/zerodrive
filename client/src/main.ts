@@ -1,11 +1,11 @@
 import Vue from "vue";
 Vue.config.devtools = true;
 
-import VueRouter from "vue-router";
+import VueRouter, { Route } from "vue-router";
 import "./component-hooks";
 
 import main from "./components/main.vue";
-
+import { UserData, VueRoot } from "./types";
 // Import page components
 import HomePage from "./components/pages/homepage.vue";
 import LoginPage from "./components/pages/loginpage.vue";
@@ -27,37 +27,50 @@ const router = new VueRouter({
     base: BASE_PATH,
     routes: [
         { path: "/", component: HomePage },
-        { path: "/login", component: LoginPage },
+        { path: "/login", name: "login", component: LoginPage },
         { path: "/folder/:folder_id", name: "folder", component: FolderPage},
         { path: "*", component: ErrorPage, props: { statusCode: 404, statusReason: "Page not found"} }
     ]
 });
 
-interface UserData {
-    username: string;
-}
-
-new Vue({
+const root = new Vue({
     data: {
         userData: {
-            username: "vmarica"
+            id: 0,
+            username: "",
+            root_folder_id: -1,
+            storage_used: 0,
+            max_storage_space: 0
         } as UserData,
-        loggedIn: false
+        loggedIn: null as boolean | null // this value is null if we don't know if the user is logged in
     },
     methods: {
-        refreshUserData: function() {
-            axios.get("/api/user")
-                .then(response => {
-                    console.log(response);
-                })
-                .catch(error => {
-                    this.loggedIn = false;
-                });
+        refreshUserData: async function(): Promise<void> {
+            return new Promise<void>((resolve, reject) => {
+                axios.get("/api/user")
+                    .then(response => {
+                        this.userData = response.data as UserData;
+                        this.loggedIn = true;
+                    })
+                    .catch(error => {
+                        this.loggedIn = false;
+                    })
+                    .then(() => {
+                        resolve();
+                    });
+            });
         }
     },
-    created: function() {
-        this.refreshUserData();
+    created: async function() {
+        console.log("user data request started");
+        await this.refreshUserData();
+        console.log("user data request finished");
     },
     router: router,
-    render: create => create(main)
-}).$mount("#app");
+    render: create => {
+        console.log("Render");
+        return create(main);
+    }
+});
+
+root.$mount("#app");

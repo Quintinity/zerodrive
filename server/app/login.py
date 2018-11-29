@@ -11,7 +11,7 @@ from hashlib import sha256
 from datetime import datetime
 from . import util, auth, config, ZerodriveException
 from .user import MAX_STORAGE_SPACE
-import pymysql, ldap3, os
+import pymysql, ldap3, os, json
 
 class Login(Resource):
     def __init__(self):
@@ -39,18 +39,20 @@ class Login(Resource):
     # Returns the user ID if successful, None otherwise.
     # If authentication succeeds but 
     def auth_ldap(self, username, password, ldap_server, use_tls):
+        ldap_connection = ldap3.Connection(ldap_server, user="uid={},ou=People,ou=fcs,o=unb".format(username), password=password)
         try:
-            ldap_connection = ldap3.Connection(ldap_server, user="uid={},ou=People,ou=fcs,o=unb".format(username), password=password)
             ldap_connection.open()
             if use_tls:
                 ldap_connection.start_tls()
             ldap_connection.bind()
-            ldap_connection.unbind()
 
             if ldap_connection.result["result"] == 49: # Invalid credentials
                 return None
             elif ldap_connection.result["result"] != 0:
                 raise ZerodriveException(500, "An unknown LDAP error has occurred: {}.".format(ldap_connection.result["result"]))
+
+            ldap_connection.search(search_base="ou=People,ou=fcs,o=unb", search_filter="(uid={})".format(username), search_scope=ldap3.SUBTREE, attributes=["gecos"])
+            print(ldap_connection.response)
 
             db_connection = util.open_db_connection()
             cur = db_connection.cursor()
@@ -74,6 +76,8 @@ class Login(Resource):
             return user_id
         except ldap3.core.exceptions.LDAPException as ex:
             raise ZerodriveException(500, "Auth error: {}".format(str(ex)))
+        finally:
+            ldap_connection.unbind()
 
     # POST: login a user
     def post(self):
