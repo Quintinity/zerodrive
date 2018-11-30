@@ -8,7 +8,7 @@
                 </p>
                 <div v-if="$root.loggedIn">
                     <p id="usernameLabel" class="zd-use-font zd-bold pt-2">Hi {{ $root.userData.fullname }},</p>
-                    <router-link class="btn btn-lg ml-auto btn-outline-light mt-1 zd-use-font" to="/folder">View your files</router-link>
+                    <router-link class="btn btn-lg ml-auto btn-outline-light mt-1 zd-use-font" v-bind:to="'/folder/' + $root.userData.root_folder_id">View your files</router-link>
                 </div>
                 <router-link v-else class="btn btn-lg ml-auto btn-outline-light mt-5 zd-use-font" to="/login">Log in with your UNB account</router-link>
             </div>
