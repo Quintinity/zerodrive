@@ -6,6 +6,7 @@ import "./component-hooks";
 
 import main from "./components/main.vue";
 import { UserData, VueRoot } from "./types";
+
 // Import page components
 import HomePage from "./components/pages/homepage.vue";
 import LoginPage from "./components/pages/loginpage.vue";
@@ -49,6 +50,7 @@ const root = new Vue({
             return new Promise<void>((resolve, reject) => {
                 axios.get("/api/user")
                     .then(response => {
+                        console.log(response);
                         this.userData = response.data as UserData;
                         this.loggedIn = true;
                     })
@@ -62,13 +64,10 @@ const root = new Vue({
         }
     },
     created: async function() {
-        console.log("user data request started");
         await this.refreshUserData();
-        console.log("user data request finished");
     },
     router: router,
     render: create => {
-        console.log("Render");
         return create(main);
     }
 });

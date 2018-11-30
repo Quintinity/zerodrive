@@ -18,7 +18,7 @@ def requires_auth(func):
 
         try:
             # Fetch all relevant user data 
-            cur.execute("select id, username, is_unb_account, max_storage_space, expiry_time, \
+            cur.execute("select id, fullname, username, is_unb_account, max_storage_space, expiry_time, \
                 (select id from Folder where Folder.user_id=User.id and Folder.parent_folder is NULL) as root_folder_id, \
                 (select cast(ifnull(sum(size_bytes), 0) as SIGNED) from File where File.user_id=User.id) as storage_used \
                 from User, Session where Session.token=%s and User.id = Session.user_id", (session_token))

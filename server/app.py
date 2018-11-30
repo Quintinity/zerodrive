@@ -16,7 +16,7 @@
 from flask import Flask, session, redirect, url_for, g, jsonify
 from flask_restful import Api
 from app import util, config, auth, User, Login, Folder, FolderSpecific, File, FileSpecific, ZerodriveException
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -40,8 +40,8 @@ def after_request(res):
         connection = util.open_db_connection()
         cursor = connection.cursor()
 
-        expiry_datetime = datetime.utcnow()
-        expiry_datetime = expiry_datetime.replace(day=expiry_datetime.day + auth.SESSION_TOKEN_LIFETIME, microsecond=0)
+        expiry_datetime = datetime.utcnow() + timedelta(days=auth.SESSION_TOKEN_LIFETIME)
+        expiry_datetime = expiry_datetime.replace(microsecond=0)
         cursor.execute("update Session set expiry_time=%s where token=%s", (expiry_datetime, g.session_token))
         connection.commit()
 

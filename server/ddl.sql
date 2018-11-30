@@ -8,6 +8,7 @@ set FOREIGN_KEY_CHECKS = 1;
 create table User(
     id int not null auto_increment,
     username varchar(64) not null,
+    fullname varchar(128) default null,
     hashpw varchar(64),
     salt varchar(48),
     is_unb_account boolean not null default false,

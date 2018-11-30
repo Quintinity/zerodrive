@@ -2,7 +2,7 @@
 
 HOST="${ZERODRIVE_SERVER_HOST:-127.0.0.1}"
 PORT="${ZERODRIVE_SERVER_PORT:-40500}"
-BASEURL=https://$HOST:$PORT
+BASEURL=https://$HOST:$PORT/api
 
 echo -e "Running tests on $BASEURL"
 
@@ -74,15 +74,15 @@ function testcase() {
 
 # Account creation tests
 echo -e "\n== Local user creation =="
-testcase "Missing username"     400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"password": "xyz"}' $BASEURL/user
-testcase "Missing password"     400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity"}' $BASEURL/user
-testcase "Valid credentials"    200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
-testcase "Duplicate username"   400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/user
+testcase "Missing username"     400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"password": "xyz", "auth_type": "db"}' $BASEURL/user
+testcase "Missing password"     400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "auth_type": "db"}' $BASEURL/user
+testcase "Valid credentials"    200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/user
+testcase "Duplicate username"   400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/user
 
 # Login/logout tests
 echo -e "\n== Local user sessions =="
-testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
-testcase "Try logging in when already logged in" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+testcase "Logging in"  200 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/login
+testcase "Try logging in when already logged in" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/login
 testcase "Logging out" 200 curl $CURL_PARAMS -X DELETE $BASEURL/login
 
 echo -e "\n== LDAP user sessions =="
@@ -104,7 +104,7 @@ NEW_FOLDER_ID=$(echo "$BODY" | jq .new_folder_id)
 testcase "Try to create folder with duplicate name" 400 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder1\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 testcase "Try to create folder under non-existent folder" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"name": "Folder1", "parent_folder_id": "-1"}' $BASEURL/folder
 curl $CURL_PARAMS -X DELETE $BASEURL/login
-curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/login
 testcase "Try to create folder under another user's folder" 401 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"name\": \"Folder2\", \"parent_folder_id\": \"$ROOT_FOLDER_ID\"}" $BASEURL/folder
 curl $CURL_PARAMS -X DELETE $BASEURL/login
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
@@ -146,7 +146,7 @@ testcase "Invalid session" 400 curl $CURL_PARAMS -X DELETE $BASEURL/user
 
 # Login and delete the account
 echo -e "\n== Local user account deletion =="
-curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz"}' $BASEURL/login
+curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d '{"username": "quintinity", "password": "xyz", "auth_type": "db"}' $BASEURL/login
 testcase "Delete account"  200 curl $CURL_PARAMS -X DELETE $BASEURL/user
 testcase "Invalid session" 400 curl $CURL_PARAMS -X DELETE $BASEURL/user
 

@@ -8,7 +8,7 @@
 from flask_restful import Resource
 from flask import request, make_response
 from hashlib import sha256
-from datetime import datetime
+from datetime import datetime, timedelta
 from . import util, auth, config, ZerodriveException
 from .user import MAX_STORAGE_SPACE
 import pymysql, ldap3, os, json
@@ -32,13 +32,12 @@ class Login(Resource):
         if result is None:
             return None
         given_hashpw = sha256((password + result["salt"]).encode("UTF-8")).digest().hex()
-
         return result["id"] if given_hashpw == result["hashpw"] else None
     
     # Authenticate against an LDAP.
     # Returns the user ID if successful, None otherwise.
     # If authentication succeeds but 
-    def auth_ldap(self, username, password, ldap_server, use_tls):
+    def auth_ldap(self, username, password, ldap_server, use_tls, get_fullname=False):
         ldap_connection = ldap3.Connection(ldap_server, user="uid={},ou=People,ou=fcs,o=unb".format(username), password=password)
         try:
             ldap_connection.open()
@@ -51,20 +50,22 @@ class Login(Resource):
             elif ldap_connection.result["result"] != 0:
                 raise ZerodriveException(500, "An unknown LDAP error has occurred: {}.".format(ldap_connection.result["result"]))
 
-            ldap_connection.search(search_base="ou=People,ou=fcs,o=unb", search_filter="(uid={})".format(username), search_scope=ldap3.SUBTREE, attributes=["gecos"])
-            print(ldap_connection.response)
+            fullname = "Developer"
+            if get_fullname:
+                ldap_connection.search(search_base="ou=People,ou=fcs,o=unb", search_filter="(uid={})".format(username), search_scope=ldap3.SUBTREE, attributes=["gecos"])
+                fullname = ldap_connection.response[0]["attributes"]["gecos"]
 
             db_connection = util.open_db_connection()
             cur = db_connection.cursor()
 
             cur.execute("select id from User where username = %s and is_unb_account = true", (username))
             db_connection.commit()
-            
+
             user_id = None
             result = cur.fetchone()
             if result is None:
-                cur.execute("insert into User(username, is_unb_account, max_storage_space) values(%s, %s, %s)", 
-                    (username, True, MAX_STORAGE_SPACE))
+                cur.execute("insert into User(username, fullname, is_unb_account, max_storage_space) values(%s, %s, %s, %s)", 
+                    (username, fullname, True, MAX_STORAGE_SPACE))
                 db_connection.commit()
                 user_id = cur.lastrowid
                 cur.execute("insert into Folder(name, user_id, parent_folder) values(%s, %s, %s)", ("", user_id, None))
@@ -94,14 +95,12 @@ class Login(Resource):
         if old_session_token is not None:
             raise ZerodriveException(400, "You are already logged in")
 
-        print("Opening db connection...")
         connection = util.open_db_connection()
-        print("Db connection opened!")
         
         try:
             user_id = None
             if auth_type == "":
-                user_id = self.auth_ldap(username, password, self.ldap_server_unb, config.ldap_unb["use_tls"])
+                user_id = self.auth_ldap(username, password, self.ldap_server_unb, config.ldap_unb["use_tls"], get_fullname=True)
             elif auth_type == "db":
                 user_id = self.auth_db(username, password)
             elif auth_type == "dev":
@@ -116,8 +115,9 @@ class Login(Resource):
 
             # Generate and store new session token
             session_token = os.urandom(32).hex()
-            expiry_datetime = datetime.utcnow()
-            expiry_datetime = expiry_datetime.replace(day=expiry_datetime.day + auth.SESSION_TOKEN_LIFETIME, microsecond=0)
+            expiry_datetime = datetime.utcnow() + timedelta(days=auth.SESSION_TOKEN_LIFETIME)
+            expiry_datetime = expiry_datetime.replace(microsecond=0)
+
             cur.execute("insert into Session(token, user_id, expiry_time) values(%s, %s, %s)", (session_token, user_id, expiry_datetime))
             connection.commit()
             cur.close()
