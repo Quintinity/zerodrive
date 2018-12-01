@@ -6,11 +6,11 @@
                 <button class="float-right btn zd-use-font zd-bg-blue btn-primary"><i class="fa fa-file-upload mr-2 fa-button"></i>Upload File</button>
                 <button v-on:click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
             </div>
-            <router-link class="zd-bold zd-use-font" to="/folder/60">My Files</router-link>
+            <FolderBar class="pt-2 pl-2" :currentID="folderData.id" :currentName="folderData.name" :hierarchy="folderData.hierarchy"></FolderBar>
 
             <!-- Items table -->
             <div class="table-responsive">
-                <table class="table table-hover mt-3 mb-0" style="width: calc(100% - 17px)">
+                <table class="table table-hover mt-2 mb-0" style="width: calc(100% - 17px)">
                     <thead>
                         <tr class="border-bottom">
                             <td width="65%" scope="col">Name</td>
