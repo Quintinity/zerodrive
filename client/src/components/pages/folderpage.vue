@@ -9,26 +9,21 @@
         <table class="table table-hover mt-3">
         <thead>
             <tr>
-                <td class="zd-use-font" scope="col">Name</td>
-                <td class="zd-use-font text-right" scope="col">Last Modified</td>
-                <td class="zd-use-font text-right" scope="col">Size</td>
+                <td class="" scope="col">Name</td>
+                <td class="text-right" scope="col">Last Modified</td>
+                <td class="text-right" scope="col">Size</td>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><i class="fa fa-folder"></i>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
+                <td><i class="fa fa-folder item-icon"></i>Folder 1</td>
+                <td class="text-right">Yesterday</td>
+                <td class="text-right">--</td>
             </tr>
             <tr>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
+                <td><i class="fa fa-file-archive item-icon"></i>Assignment5.zip</td>
+                <td class="text-right">Wednesday</td>
+                <td class="text-right">164 KB</td>
             </tr>
         </tbody>
         </table>
@@ -51,6 +46,11 @@ thead tr:first-child td{
     height: 36px;
 }
 
+.item-icon {
+    padding-right: 5px;
+    font-size: 20px;
+}
+
 button {
     width: 170px;
     font-weight: 700;
@@ -59,10 +59,17 @@ button {
 }
 
 button:hover {
-    background-color: #4d6cf5 !important;
+    background-color: #5b78fa !important;
 }
 
-td {
+tbody td {
     color: #6c757d;
+    font-weight: 300;
+    font-family: 'Raleway', sans-serif;
+}
+
+thead td {
+    font-weight: 400;
+    font-family: 'Raleway', sans-serif;
 }
 </style>
