@@ -9,6 +9,24 @@ export interface UserData {
     max_storage_space: number;
 }
 
+export interface HierarchyEntry {
+    id: number;
+    name: string;
+}
+
+export interface ItemData extends HierarchyEntry {
+    size_bytes: number | null;
+    type: string;
+    last_modified: string;
+}
+
+export interface FolderData extends HierarchyEntry{
+    parent_folder: number | null;
+    last_modified: string;
+    contents: ItemData[];
+    hierarchy: HierarchyEntry[];
+}
+
 export interface VueRoot extends Vue {
     userData: UserData;
     loggedIn: boolean | null;

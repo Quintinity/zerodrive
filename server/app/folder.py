@@ -10,7 +10,7 @@ from flask_restful import Resource
 from .auth import requires_auth
 from .exceptions import ZerodriveException
 from . import util
-import pymysql
+import pymysql, json
 
 def validate_folder(query_results):
     if query_results is None:
@@ -47,7 +47,7 @@ class Folder(Resource):
             return {"new_folder_id": cursor.lastrowid}, 200
         except pymysql.MySQLError as err:
             if err.args[0] == 1062: # Unique key error, a folder with the given name already exists in the parent folder
-                raise ZerodriveException(400, "A folder with the name '{}' already exists here.".format(folder_name))
+                raise ZerodriveException(400, "A folder named '{}' already exists here.".format(folder_name))
             raise ZerodriveException(500, "A database error has occurred ({}): {}".format(err.args[0], err.args[1]))
         finally:
             cursor.close()
@@ -130,15 +130,15 @@ class FolderSpecific(Resource):
                 hierarchy.insert(0, {"name": result["name"], "id": parent_folder})
                 parent_folder = result["parent_folder"]
 
-            cursor.execute("select id, name, null as size_bytes, 'Folder' as type from Folder where parent_folder=%s union \
-                            select id, name, size_bytes, 'File' as type from File where parent_folder=%s", (folder_id, folder_id))
+            cursor.execute("select id, name, null as size_bytes, 'Folder' as type, last_modified from Folder where parent_folder=%s union \
+                            select id, name, size_bytes, 'File' as type, last_modified from File where parent_folder=%s", (folder_id, folder_id))
             connection.commit()
             contents = cursor.fetchall()
 
             return {
                 "name": folder_info["name"],
                 "id": folder_id,
-                "last_modified": str(folder_info["last_modified"]),
+                "last_modified": folder_info["last_modified"],
                 "hierarchy": hierarchy,
                 "contents": contents
             }, 200

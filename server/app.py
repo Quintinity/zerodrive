@@ -71,6 +71,7 @@ def serve_static(path):
 
 if __name__ == "__main__":
     server.config["PROPAGATE_EXCEPTIONS"] = True
+    server.config["RESTFUL_JSON"] = { "cls": util.ExtendedJSONEncoder }
     server.run(
         host=config.server["host"],
         port=config.server["port"], 

@@ -16,12 +16,18 @@ import FolderPage from "./components/pages/folderpage.vue";
 import "./styles/zerodrive.css";
 import "./images/favicon.ico";
 
-import "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+
+const components = require("bootstrap-vue/es/components/");
+Vue.use(components.Modal);
+
 import axios from "axios";
 
 Vue.use(VueRouter);
+
+console.log("Using base URL: " + BASE_PATH);
+axios.defaults.baseURL = BASE_PATH;
 
 const router = new VueRouter({
     mode: MODE === "production" ? "history" : "hash",
@@ -30,7 +36,7 @@ const router = new VueRouter({
         { path: "/", component: HomePage },
         { path: "/login", name: "login", component: LoginPage },
         { path: "/folder/:folder_id", name: "folder", component: FolderPage},
-        { path: "*", component: ErrorPage, props: { statusCode: 404, statusReason: "Page not found"} }
+        { path: "*", component: ErrorPage, props: { statusCode: "404", statusReason: "Page not found"} },
     ]
 });
 
