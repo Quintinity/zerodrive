@@ -4,7 +4,7 @@
         <div v-else class="mx-auto zd-center pt-5 px-3">
             <div id="buttonbar">
                 <button @click.prevent="$refs.filePickerInput.click()" class="float-right btn zd-use-font zd-bg-blue btn-primary"><i class="fa fa-file-upload mr-2 fa-button"></i>Upload File</button>
-                <input ref="filePickerInput" type="file" style="display: none" @change="fileSelected">
+                <input ref="filePickerInput" type="file" style="display: none" @change="uploadFile">
                 <button @click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
             </div>
             <FolderBar class="pt-2 pl-2" :currentID="folderData.id" :currentName="folderData.name" :hierarchy="folderData.hierarchy"></FolderBar>
@@ -52,8 +52,8 @@
             <div>
                 <span class="zd-use-font">Uploading</span>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
-                <b-progress :striped="true" :value="uploadProgress" height="25px" class="mb-3"></b-progress>
-                <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Create</button>
+                <b-progress :striped="true" ref="progressBar" :value="uploadProgress" height="25px" class="mb-3"></b-progress>
+                <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">OK</button>
             </div>
         </b-modal>
     </div>

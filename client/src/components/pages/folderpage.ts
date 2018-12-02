@@ -1,4 +1,4 @@
-import Vue, from "vue";
+import Vue from "vue";
 import Component from "vue-class-component";
 import { Route } from 'vue-router';
 import { FolderData, ItemData, HierarchyEntry } from "../../types";
@@ -7,6 +7,7 @@ import ErrorBanner from "../errorbanner.vue";
 import ItemRow from "../itemrow.vue";
 import axios, { AxiosError } from "axios";
 import { sleep } from "../../util";
+import { Modal, Progress } from "bootstrap-vue";
 
 @Component({components: { FolderBar, ErrorBanner, ItemRow }})
 export default class FolderPage extends Vue {
@@ -25,10 +26,43 @@ export default class FolderPage extends Vue {
 
     waiting = false;
     newFolderName: string = "";
-    uploadProgress = 50;
+    uploadProgress = 0;
 
-    fileSelected(event: any): void {
-        console.log(event);
+    async uploadFile(event: Event): Promise<void> {
+        let data = new FormData();
+        let fileList = (event.target as HTMLInputElement).files!;
+        console.log(fileList);
+
+        let formData = new FormData();
+        formData.append("parent_folder", this.folderData.id.toString());
+        formData.append("file", fileList[0]);
+        
+        const vm = this;
+        const requestConfig = {
+            onUploadProgress: (event: ProgressEvent) => {
+                console.log(event);
+                vm.uploadProgress = Math.floor(100 * (event.loaded / event.total));
+            }
+        };
+
+        (this.$refs.fileUploadModal as Modal).show();
+        this.uploadProgress = 0;
+        await sleep(150);
+
+        return new Promise<void>((resolve, reject) => {
+            axios.post("/api/file", formData, requestConfig)
+                .then(async response => {
+                    console.log(response);
+                    await vm.loadFolderData(vm.folderData.id.toString());
+                    await sleep(200);
+                    this.closeModal(this.$refs.fileUploadModal);
+                })
+                .catch(async error => {
+                    await sleep(200);
+                    this.errorMessage = error.response.data.message;
+                })
+                .then(() => resolve());
+        }); 
     }
 
     async createFolder() {
@@ -49,7 +83,7 @@ export default class FolderPage extends Vue {
         .catch(error => {
             console.log(error);
             vm.errorMessage = error.response.data.message;
-            vm.$refs.folderNameField.focus();
+            (vm.$refs.folderNameField as HTMLInputElement).focus();
         })
         .then(() => {
             vm.waiting = false;
