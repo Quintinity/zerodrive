@@ -24,8 +24,6 @@ app_path = os.path.join(os.getcwd(), os.path.dirname(__file__))
 # Create Flask application and initialize it
 server = Flask(__name__, static_folder=config.server["static_file_dir"], static_url_path=config.server["base_url"] + "/static")
 
-print("Serving static files from {}".format(config.server["base_url"] + "/static"));
-
 # Custom exception handler
 @server.errorhandler(ZerodriveException)
 def on_exception(exception):
@@ -55,13 +53,14 @@ def cleanup_after_request(a):
         g.db.close()
 
 # Add resource endpoints
+base_url = config.server["base_url"]
 api = Api(server)
-api.add_resource(User, "/api/user")
-api.add_resource(Login, "/api/login")
-api.add_resource(Folder, "/api/folder")
-api.add_resource(FolderSpecific, "/api/folder/<int:folder_id>")
-api.add_resource(File, "/api/file")
-api.add_resource(FileSpecific, "/api/file/<int:file_id>")
+api.add_resource(User, base_url + "/api/user")
+api.add_resource(Login, base_url + "/api/login")
+api.add_resource(Folder, base_url + "/api/folder")
+api.add_resource(FolderSpecific, base_url + "/api/folder/<int:folder_id>")
+api.add_resource(File, base_url + "/api/file")
+api.add_resource(FileSpecific, base_url + "/api/file/<int:file_id>")
 
 # Serve index.html as a fallback route, which enables the Single Page Application
 @server.route("/", defaults = {"path": ""})
