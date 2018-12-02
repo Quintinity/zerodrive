@@ -3,8 +3,9 @@
         <ErrorBanner v-if="statusCode != null" :statusCode="statusCode" :statusReason="statusReason"></ErrorBanner>
         <div v-else class="mx-auto zd-center pt-5 px-3">
             <div id="buttonbar">
-                <button class="float-right btn zd-use-font zd-bg-blue btn-primary"><i class="fa fa-file-upload mr-2 fa-button"></i>Upload File</button>
-                <button v-on:click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
+                <button @click.prevent="$refs.filePickerInput.click()" class="float-right btn zd-use-font zd-bg-blue btn-primary"><i class="fa fa-file-upload mr-2 fa-button"></i>Upload File</button>
+                <input ref="filePickerInput" type="file" style="display: none" @change="fileSelected">
+                <button @click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
             </div>
             <FolderBar class="pt-2 pl-2" :currentID="folderData.id" :currentName="folderData.name" :hierarchy="folderData.hierarchy"></FolderBar>
 
@@ -30,6 +31,8 @@
                     </table>
                 </div>
             </div>
+
+            <p class="text-center pt-3 zd-use-font zd-bold " style="color: darkgrey; font-size: 20px" v-if="folderData.contents.length === 0">There is nothing here</p>
         </div>
 
         <!-- New folder modal dialog-->
@@ -39,9 +42,18 @@
                 <i @click="closeModal($refs.newFolderModal)" class="fa fa-times float-right close_button"></i>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
                 <input type="text" v-model="newFolderName" ref="folderNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
-                
                 <button type="submit" v-if="!waiting" @click.prevent="createFolder" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Create</button>
                 <div v-else class="float-right pt-3 lds-dual-ring mr-5" style="margin-bottom: 14px; margin-right: 3.5rem !important"></div>
+            </div>
+        </b-modal>
+
+        <!-- File upload modal dialog-->
+        <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="fileUploadModal">
+            <div>
+                <span class="zd-use-font">Uploading</span>
+                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
+                <b-progress :striped="true" :value="uploadProgress" height="25px" class="mb-3"></b-progress>
+                <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Create</button>
             </div>
         </b-modal>
     </div>
@@ -117,5 +129,9 @@ tr:first-child td {
 
 .modal-dialog {
     max-width: 400px !important;
+}
+
+.progress-bar {
+    background-color: #435cff !important;
 }
 </style>

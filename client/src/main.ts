@@ -21,6 +21,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 
 const components = require("bootstrap-vue/es/components/");
 Vue.use(components.Modal);
+Vue.use(components.Progress);
 
 import axios from "axios";
 

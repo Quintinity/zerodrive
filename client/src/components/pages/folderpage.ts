@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue, from "vue";
 import Component from "vue-class-component";
 import { Route } from 'vue-router';
 import { FolderData, ItemData, HierarchyEntry } from "../../types";
@@ -22,10 +22,14 @@ export default class FolderPage extends Vue {
     errorMessage: string | null = null;
     statusCode: string | null = null;
     statusReason: string = "An error has occurred";
-    
-    
+
     waiting = false;
     newFolderName: string = "";
+    uploadProgress = 50;
+
+    fileSelected(event: any): void {
+        console.log(event);
+    }
 
     async createFolder() {
         this.waiting = true;
