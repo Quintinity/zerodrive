@@ -22,6 +22,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 const components = require("bootstrap-vue/es/components/");
 Vue.use(components.Modal);
 Vue.use(components.Progress);
+Vue.use(components.Popover);
 
 import axios from "axios";
 
@@ -57,9 +58,9 @@ const root = new Vue({
             return new Promise<void>((resolve, reject) => {
                 axios.get("/api/user")
                     .then(response => {
-                        console.log(response);
                         this.userData = response.data as UserData;
                         this.loggedIn = true;
+                        this.$emit("userdataUpdated");
                     })
                     .catch(error => {
                         this.loggedIn = false;
@@ -70,7 +71,8 @@ const root = new Vue({
             });
         },
     },
-
+    watch: {
+    },
     created: async function() {
         await this.refreshUserData();
     },

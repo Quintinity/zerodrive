@@ -55,7 +55,7 @@
             <div>
                 <span class="zd-use-font zd-bold ">Uploading</span>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
-                <b-progress :striped="true" ref="progressBar" :value="uploadProgress" height="25px" class="mb-3"></b-progress>
+                <b-progress :striped="true" ref="progressBar" :value="uploadProgress" height="25px" class="upload-bar mb-3"></b-progress>
                 <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">OK</button>
             </div>
         </b-modal>
@@ -148,7 +148,7 @@ tr:first-child td {
     max-width: 400px !important;
 }
 
-.progress-bar {
+.upload-bar .progress-bar {
     background-color: #435cff !important;
 }
 </style>

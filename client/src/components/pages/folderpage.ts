@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Route } from 'vue-router';
-import { FolderData, ItemData, HierarchyEntry } from "../../types";
+import { FolderData, ItemData, VueRoot } from "../../types";
 
 import FolderBar from "../folderbar.vue";
 import ErrorBanner from "../errorbanner.vue";
@@ -10,7 +10,7 @@ import ItemRow from "../itemrow.vue";
 
 import axios, { AxiosError } from "axios";
 import { sleep } from "../../util";
-import { Modal, Progress } from "bootstrap-vue";
+import { Modal } from "bootstrap-vue";
 
 import * as download from "downloadjs";
 
@@ -63,10 +63,12 @@ export default class FolderPage extends Vue {
     async deleteItem(): Promise<void> {
         const type = this.selectedItem!.type.toLowerCase();
         const itemID = this.selectedItem!.id;
-
+        const vm = this;
         return new Promise<void>((resolve, reject) => {
             axios.delete("/api/" + type + "/" + itemID)
-                .then(response => {})
+                .then(response => {
+                    (vm.$root as VueRoot).refreshUserData();
+                })
                 .catch(error => {})
                 .then(() => resolve());
         });
@@ -120,7 +122,7 @@ export default class FolderPage extends Vue {
         let formData = new FormData();
         formData.append("parent_folder", this.folderData.id.toString());
         formData.append("file", fileList[0]);
-        
+
         (inputElement.form as HTMLFormElement).reset();
 
         const vm = this;
@@ -139,6 +141,7 @@ export default class FolderPage extends Vue {
                 .then(async response => {
                     await sleep(1000);
                     await vm.loadFolderData(vm.folderData.id.toString());
+                    (vm.$root as VueRoot).refreshUserData();
                     this.closeModal(this.$refs.fileUploadModal as Modal);
                 })
                 .catch(async error => {
