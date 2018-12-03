@@ -66,3 +66,7 @@ input:focus, button:focus {
 .zd-input::placeholder {
     color: #c6cbcc;
 }
+
+html, body {
+    height: 100%;
+}

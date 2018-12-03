@@ -16,12 +16,14 @@
         "axios": "^0.18.0",
         "bootstrap-vue": "^2.0.0-rc.11",
         "bytes": "^3.0.0",
+        "downloadjs": "^1.4.7",
         "vue": "^2.5.17",
         "vue-property-decorator": "^7.2.0",
         "vue-router": "^3.0.2"
     },
     "devDependencies": {
         "@types/bytes": "^3.0.0",
+        "@types/downloadjs": "^1.4.0",
         "clean-webpack-plugin": "^1.0.0",
         "compression-webpack-plugin": "^2.0.0",
         "cross-env": "^5.2.0",

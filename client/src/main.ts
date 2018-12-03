@@ -68,8 +68,9 @@ const root = new Vue({
                         resolve();
                     });
             });
-        }
+        },
     },
+
     created: async function() {
         await this.refreshUserData();
     },

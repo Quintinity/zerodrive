@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$root.loggedIn != null">
+    <div @click="onGlobalClick" v-if="$root.loggedIn != null" style="height:100%">
         <topbar></topbar>
         <router-view></router-view>
         <bottombar></bottombar>
@@ -15,7 +15,11 @@ import topbar from "./topbar.vue";
 import bottombar from "./bottombar.vue";
 
 @Component({components: { topbar, bottombar }})
-export default class Main extends Vue {}
+export default class Main extends Vue {
+    onGlobalClick(event: MouseEvent): void {
+        this.$root.$emit("onGlobalClick", event);
+    }
+}
 </script>
 
 <style>

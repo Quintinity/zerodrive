@@ -4,7 +4,9 @@
         <div v-else class="mx-auto zd-center pt-5 px-3">
             <div id="buttonbar">
                 <button @click.prevent="$refs.filePickerInput.click()" class="float-right btn zd-use-font zd-bg-blue btn-primary"><i class="fa fa-file-upload mr-2 fa-button"></i>Upload File</button>
-                <input ref="filePickerInput" type="file" style="display: none" @change="uploadFile">
+                <form>
+                    <input ref="filePickerInput" type="file" style="display: none" @change="uploadFile">
+                </form>
                 <button @click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
             </div>
             <FolderBar class="pt-2 pl-2" :currentID="folderData.id" :currentName="folderData.name" :hierarchy="folderData.hierarchy"></FolderBar>
@@ -14,9 +16,9 @@
                 <table class="table table-hover mt-2 mb-0" style="width: calc(100% - 17px)">
                     <thead>
                         <tr class="border-bottom">
-                            <td width="65%" scope="col">Name</td>
-                            <td width="20%" class="px-0" scope="col">Last Modified</td>
-                            <td width="15%" class="px-0" scope="col">Size</td>
+                            <td width="65%" scope="col" class="zd-bold">Name</td>
+                            <td width="20%" class="px-0 zd-use-font zd-bold" scope="col">Last Modified</td>
+                            <td width="15%" class="px-0 zd-use-font zd-bold" scope="col">Size</td>
                         </tr>
                     </thead>
                 </table>
@@ -25,7 +27,7 @@
                     <table class="table table-hover">
                         <tbody>
                             <template v-for="item in folderData.contents">
-                                <ItemRow :key="item.id" :itemData="item"></ItemRow>
+                                <ItemRow @onRightClick="showContextMenu" :key="item.id + '-' + item.type" :itemData="item" :selected="selectedItem !== null && selectedItem.id === item.id && selectedItem.type === item.type"></ItemRow>
                             </template>
                         </tbody>
                     </table>
@@ -38,7 +40,7 @@
         <!-- New folder modal dialog-->
         <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="newFolderModal" @shown="$refs.folderNameField.focus()">
             <div>
-                <span class="zd-use-font">Create New Folder</span>
+                <span class="zd-use-font zd-bold">Create New Folder</span>
                 <i @click="closeModal($refs.newFolderModal)" class="fa fa-times float-right close_button"></i>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
                 <input type="text" v-model="newFolderName" ref="folderNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
@@ -50,12 +52,14 @@
         <!-- File upload modal dialog-->
         <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="fileUploadModal">
             <div>
-                <span class="zd-use-font">Uploading</span>
+                <span class="zd-use-font zd-bold ">Uploading</span>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
                 <b-progress :striped="true" ref="progressBar" :value="uploadProgress" height="25px" class="mb-3"></b-progress>
                 <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">OK</button>
             </div>
         </b-modal>
+
+        <ContextMenu @buttonClicked="onContextMenuClick" v-if="selectedItem !== null" :x="contextMenuX" :y="contextMenuY" :itemData="selectedItem"></ContextMenu>
     </div>
 </template>
 
