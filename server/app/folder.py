@@ -82,10 +82,10 @@ class FolderSpecific(Resource):
     @requires_auth
     def put(self, folder_id):
         body = request.get_json(silent=True)
-        if body is None or not "name" in body:
-            raise ZerodriveException(400, "Invalid request body - missing 'name' parameter.")
+        if body is None or not "new_name" in body:
+            raise ZerodriveException(400, "Invalid request body - missing 'new_name' parameter.")
 
-        new_name = body["name"]
+        new_name = body["new_name"]
         if len(new_name) == 0:
             raise ZerodriveException(400, "Invalid folder name.")
 
@@ -102,7 +102,8 @@ class FolderSpecific(Resource):
             cursor.execute("update Folder set name=%s where id=%s", (new_name, folder_id))
             connection.commit()
         except pymysql.MySQLError as err:
-            # TODO: specifically handle unique key failures (non-unique names in parent folder)
+            if err.args[0] == 1062:
+                raise ZerodriveException(400, "A folder named '{}' already exists here".format(new_name))
             raise ZerodriveException(500, "A database error has occurred ({}): {}".format(err.args[0], err.args[1]))
         finally:
             cursor.close()

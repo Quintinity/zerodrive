@@ -82,10 +82,10 @@ class FileSpecific(Resource):
     @requires_auth
     def put(self, file_id):
         body = request.get_json(silent=True)
-        if body is None or not "new_file_name" in body:
-            raise ZerodriveException(400, "Missing request parameter - 'new_file_name'")
+        if body is None or not "new_name" in body:
+            raise ZerodriveException(400, "Missing request parameter - 'new_name'")
 
-        if len(body["new_file_name"]) == 0:
+        if len(body["new_name"]) == 0:
             raise ZerodriveException(400, "File name cannot be empty")
 
         connection = util.open_db_connection()
@@ -97,10 +97,12 @@ class FileSpecific(Resource):
             file_info = cursor.fetchone()
             validate_file(file_info)
 
-            cursor.execute("update File set name=%s where id=%s", (body["new_file_name"], g.user_data["id"]))
+            cursor.execute("update File set name=%s where id=%s", (body["new_name"], file_id))
             connection.commit()
             return 200
         except pymysql.MySQLError as err:
+            if err.args[0] == 1062:
+                raise ZerodriveException(400, "A file named '{}' already exists here".format(body["new_name"]))
             raise ZerodriveException(500, "A database error has occured ({}): {}".format(err.args[0], err.args[1]))
         finally:
             cursor.close()

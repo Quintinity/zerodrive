@@ -7,7 +7,7 @@
                 <form>
                     <input ref="filePickerInput" type="file" style="display: none" @change="uploadFile">
                 </form>
-                <button @click.prevent="$refs.newFolderModal.show()" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
+                <button @click.prevent="showModal($refs.newFolderModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mr-2"><i class="fa fa-folder-plus mr-2 fa-button"></i>Create Folder</button>
             </div>
             <FolderBar class="pt-2 pl-2" :currentID="folderData.id" :currentName="folderData.name" :hierarchy="folderData.hierarchy"></FolderBar>
 
@@ -43,11 +43,12 @@
                 <span class="zd-use-font zd-bold">Create New Folder</span>
                 <i @click="closeModal($refs.newFolderModal)" class="fa fa-times float-right close_button"></i>
                 <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
-                <input type="text" v-model="newFolderName" ref="folderNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
+                <input type="text" v-model="newItemName" ref="folderNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
                 <button type="submit" v-if="!waiting" @click.prevent="createFolder" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Create</button>
                 <div v-else class="float-right pt-3 lds-dual-ring mr-5" style="margin-bottom: 14px; margin-right: 3.5rem !important"></div>
             </div>
         </b-modal>
+
 
         <!-- File upload modal dialog-->
         <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="fileUploadModal">
@@ -59,7 +60,19 @@
             </div>
         </b-modal>
 
-        <ContextMenu @buttonClicked="onContextMenuClick" v-if="selectedItem !== null" :x="contextMenuX" :y="contextMenuY" :itemData="selectedItem"></ContextMenu>
+        <!-- Rename item modal dialog-->
+        <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="renameItemModal" @shown="$refs.newNameField.focus()">
+            <div>
+                <span class="zd-use-font zd-bold">Rename Item</span>
+                <i @click="closeModal($refs.renameItemModal)" class="fa fa-times float-right close_button"></i>
+                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
+                <input type="text" v-model="newItemName" ref="newNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
+                <button type="submit" v-if="!waiting" @click.prevent="renameItem" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Confirm</button>
+                <div v-else class="float-right pt-3 lds-dual-ring mr-5" style="margin-bottom: 14px; margin-right: 3.5rem !important"></div>
+            </div>
+        </b-modal>
+
+        <ContextMenu @buttonClicked="onContextMenuClick" v-if="selectedItem !== null && !modalVisible" :x="contextMenuX" :y="contextMenuY" :itemData="selectedItem"></ContextMenu>
     </div>
 </template>
 
