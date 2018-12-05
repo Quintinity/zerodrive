@@ -109,8 +109,8 @@ testcase "Try to create folder under another user's folder" 401 curl $CURL_PARAM
 curl $CURL_PARAMS -X DELETE $BASEURL/login
 curl $CURL_PARAMS -H "Content-Type: application/json" -X POST -d "{\"username\": \"$LDAP_USERNAME\", \"password\": \"$LDAP_PASSWORD\", \"auth_type\": \"dev\"}" $BASEURL/login
 
-testcase "Rename a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/$NEW_FOLDER_ID
-testcase "Try to rename a folder that doesn't exist" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"name": "Folder10"}' $BASEURL/folder/0
+testcase "Rename a folder" 200 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"new_name": "Folder10"}' $BASEURL/folder/$NEW_FOLDER_ID
+testcase "Try to rename a folder that doesn't exist" 404 curl $CURL_PARAMS -H "Content-Type: application/json" -X PUT -d '{"new_name": "Folder10"}' $BASEURL/folder/0
 
 testcase "Get folder info" 200 curl $CURL_PARAMS -X GET $BASEURL/folder/$NEW_FOLDER_ID
 testcase "Try to get info from a folder that doesn't exist" 404 curl $CURL_PARAMS -X GET $BASEURL/folder/0
@@ -131,8 +131,8 @@ testcase "Try to upload a file to a folder that doesn't exist" 404 curl $CURL_PA
 testcase "Download a file" 200 curl $CURL_PARAMS -X GET $BASEURL/file/$NEW_FILE_ID
 testcase "Try to download a file that doesn't exist" 404 curl $CURL_PARAMS -X GET $BASEURL/file/0
 
-testcase "Rename a file" 200 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_file_name": "somefile.txt"}' $BASEURL/file/$NEW_FILE_ID
-testcase "Try to rename a file that doesn't exist" 404 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_file_name": "somefile.txt"}' $BASEURL/file/0
+testcase "Rename a file" 200 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_name": "somefile.txt"}' $BASEURL/file/$NEW_FILE_ID
+testcase "Try to rename a file that doesn't exist" 404 curl $CURL_PARAMS -X PUT -H "Content-Type: application/json" -d '{"new_name": "somefile.txt"}' $BASEURL/file/0
 
 testcase "Delete a file" 200 curl $CURL_PARAMS -X DELETE $BASEURL/file/$NEW_FILE_ID
 testcase "Try to delete a file that doesn't exist" 404 curl $CURL_PARAMS -X DELETE $BASEURL/file/$NEW_FILE_ID
