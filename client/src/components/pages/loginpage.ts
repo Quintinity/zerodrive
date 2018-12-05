@@ -1,3 +1,10 @@
+/*****************************************
+* Zerodrive - a cloud storage webapp     *
+* INFO 3103 Term Project                 *
+* by Vlad Marica (3440500)               *
+* Fall 2018                              *
+*****************************************/
+
 import Vue from "vue";
 import { Route } from "vue-router";
 import Component from "vue-class-component";
@@ -24,7 +31,7 @@ export default class LoginPage extends Vue {
     async submit() {
         if (this.loading) return;
         
-        var vm = this;
+        const vm = this;
         this.errorMessage = null;
         this.loading = true;
 

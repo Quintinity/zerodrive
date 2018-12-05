@@ -15,7 +15,7 @@ from .exceptions import ZerodriveException
 
 import os, pymysql
 
-MAX_STORAGE_SPACE = 500 * pow(2, 20) # Give every new account 500 MB of storage space
+MAX_STORAGE_SPACE = 10 * pow(2, 20) # Give every new account 10 MB of storage space
 
 class User(Resource):
     # GET: retrieves information about about the current user

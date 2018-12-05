@@ -13,7 +13,7 @@ from . import util, folder
 import pymysql, io
 
 BYTES_PER_MB = pow(2, 20)
-MAX_FILE_SIZE = 100 * BYTES_PER_MB # Files cannot be larger than 100 MB
+MAX_FILE_SIZE = 1 * BYTES_PER_MB # Files cannot be larger than 100 MB
 
 def validate_file(file_data):
     if file_data is None:

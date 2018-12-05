@@ -1,3 +1,10 @@
+/*****************************************
+* Zerodrive - a cloud storage webapp     *
+* INFO 3103 Term Project                 *
+* by Vlad Marica (3440500)               *
+* Fall 2018                              *
+*****************************************/
+
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Route } from 'vue-router';

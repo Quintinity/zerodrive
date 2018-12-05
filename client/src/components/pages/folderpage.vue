@@ -42,7 +42,7 @@
             <div>
                 <span class="zd-use-font zd-bold">Create New Folder</span>
                 <i @click="closeModal($refs.newFolderModal)" class="fa fa-times float-right close_button"></i>
-                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
+                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" class="mt-3 zd-use-font modal-error">{{ errorMessage || "." }}</p>
                 <input type="text" v-model="newItemName" ref="folderNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
                 <button type="submit" v-if="!waiting" @click.prevent="createFolder" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Create</button>
                 <div v-else class="float-right pt-3 lds-dual-ring mr-5" style="margin-bottom: 14px; margin-right: 3.5rem !important"></div>
@@ -54,7 +54,7 @@
         <b-modal class="zd-modal" noCloseOnBackdrop centered hide-header hide-footer no-fade ref="fileUploadModal">
             <div>
                 <span class="zd-use-font zd-bold ">Uploading</span>
-                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
+                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" class="mt-3 zd-use-font modal-error">{{ errorMessage || "." }}</p>
                 <b-progress :striped="true" ref="progressBar" :value="uploadProgress" height="25px" class="upload-bar mb-3"></b-progress>
                 <button :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" type="submit" @click.prevent="closeModal($refs.fileUploadModal)" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">OK</button>
             </div>
@@ -65,7 +65,7 @@
             <div>
                 <span class="zd-use-font zd-bold">Rename Item</span>
                 <i @click="closeModal($refs.renameItemModal)" class="fa fa-times float-right close_button"></i>
-                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" style="color: #ca2020; font-weight: 300" class="mt-3 zd-use-font">{{ errorMessage || "." }}</p>
+                <p :style="{visibility: errorMessage === null ? 'hidden' : 'visible'}" class="mt-3 zd-use-font modal-error">{{ errorMessage || "." }}</p>
                 <input type="text" v-model="newItemName" ref="newNameField" class="form-control zd-input mt-2" placeholder="Enter folder name">
                 <button type="submit" v-if="!waiting" @click.prevent="renameItem" class="float-right btn zd-use-font zd-bg-blue btn-primary mt-4">Confirm</button>
                 <div v-else class="float-right pt-3 lds-dual-ring mr-5" style="margin-bottom: 14px; margin-right: 3.5rem !important"></div>
@@ -126,6 +126,11 @@ thead td {
     margin: 0;
     overflow-y: overlay;
     padding-right: 17px;
+}
+
+.modal-error {
+    color: #ca2020;
+    font-weight: 300;
 }
 </style>
 

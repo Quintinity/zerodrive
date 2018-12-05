@@ -1,5 +1,5 @@
 <template>
-    <div @click="onGlobalClick" v-if="$root.loggedIn != null" style="height:100%">
+    <div id="zd-body-wrapper" @click="onGlobalClick" v-if="$root.loggedIn != null" style="height:100%">
         <topbar></topbar>
         <router-view></router-view>
         <bottombar></bottombar>
@@ -17,13 +17,13 @@ import bottombar from "./bottombar.vue";
 @Component({components: { topbar, bottombar }})
 export default class Main extends Vue {
     onGlobalClick(event: MouseEvent): void {
-        this.$root.$emit("onGlobalClick", event);
+        this.$root.$emit("onGlobalClick", event); // emit click event so other components can listen to it
     }
 }
 </script>
 
-<style>
-body {
-    background-color: #fbfbfb !important;
+<style scoped>
+.zd-body-wrapper {
+    height: 100%;
 }
 </style>

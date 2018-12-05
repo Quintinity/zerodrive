@@ -1,17 +1,17 @@
 <template>
    <div class="mx-auto zd-center px-5 pt-5 align-center">
-        <p class="zd-use-font zd-bold zd-fg-blue text-center" style="font-size: 30px; color: #383d41">Log in to Zerodrive</p>
+        <p class="zd-use-font zd-bold zd-fg-blue text-center grey-text" style="font-size: 30px">Log in to Zerodrive</p>
         
         <div class="mx-auto mb-5 bg-white rounded text-center" style="width: 400px; height: 340px; box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2)">
             <form class="zd-use-font mx-auto pt-3" style="width: 90%; text-align: left">
                 <div class="form-group">
-                    <label class="zd-bold" for="inputUsername" style="color: #383d41">UNB Username</label>
+                    <label class="zd-bold grey-text" for="inputUsername">UNB Username</label>
                     <input type="text" v-model="username" class="form-control zd-input" id="inputUsername" aria-describedby="emailHelp" placeholder="Enter username">
                     <small id="emailHelp" class="form-text text-muted">This is your UNB computer science username and password.</small>
                 </div>
                 
                 <div class="form-group">
-                    <label class="zd-bold" for="inputPassword" style="color: #383d41">Password</label>
+                    <label class="zd-bold grey-text" for="inputPassword">Password</label>
                     <input type="password" v-model="password" class="form-control zd-input" id="inputPassword" placeholder="Enter password">
                 </div>
                 
@@ -44,5 +44,9 @@ button:hover {
 
 #errorMessage {
     color: #ca2020;
+}
+
+.grey-text {
+    color: #383d41;
 }
 </style>

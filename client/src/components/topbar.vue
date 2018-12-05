@@ -5,11 +5,11 @@
             <router-link class="navbar-brand zd-bold mr-auto zd-use-font" to="/">Zerodrive</router-link>
 
 
-            <div v-show="$root.loggedIn" class="ml-auto mr-3 text-center" style="height: 30px; padding-top: 3px">
+            <div id="user-info-display" v-show="$root.loggedIn" class="ml-auto mr-3 text-center" style="height: 32px; padding-top: 2px">
                 <p class="zd-use-font zd-bold mb-0" style="color: white">{{ $root.userData.username }}@unb.ca</p>
-                <b-progress id="data-bar" class="data-bar" height="5px" :value="100 * $root.userData.storage_used / $root.userData.max_storage_space"></b-progress>
+                <b-progress id="data-bar" class="data-bar" height="6px" :value="100 * $root.userData.storage_used / $root.userData.max_storage_space"></b-progress>
             </div>
-            <b-popover target="data-bar" placement="bottom" triggers="hover focus">
+            <b-popover target="user-info-display" placement="bottom" triggers="hover focus">
                 {{ popoverText }}
             </b-popover>
             <router-link class="btn ml-auto btn-outline-light zd-use-font zd-bold" to="/login" v-if="this.$route.path !== '/login' && !$root.loggedIn">Log in</router-link>
